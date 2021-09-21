@@ -44,131 +44,107 @@
 .\" Portions Copyright (c) 1992, X/Open Company Limited  All Rights Reserved
 .\" Copyright (c) 2003, Sun Microsystems, Inc.  All Rights Reserved.
 .\"
-.TH ULIMIT 2 "Feb 1, 2003"
-.SH NAME
-ulimit \- get and set process limits
-.SH SYNOPSIS
-.LP
-.nf
-#include <ulimit.h>
-
-\fBlong\fR \fBulimit\fR(\fBint\fR \fIcmd\fR, \fB/*\fR \fInewlimit\fR */...);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBulimit()\fR function provides for control over process limits. It is
-effective in limiting the growth of regular files. Pipes are limited to
-\fBPIPE_MAX\fR bytes.
-.sp
-.LP
-The \fIcmd\fR values, defined in <\fBulimit.h\fR>, include:
-.sp
-.ne 2
-.na
-\fB\fBUL_GETFSIZE\fR\fR
-.ad
-.RS 15n
-Return the soft file size limit of the process. The limit is in units of
-512-byte blocks and is inherited by child processes. Files of any size can be
-read. The return value is the integer part of the soft file size limit divided
-by 512.  If the result cannot be represented as a \fBlong int\fR, the result is
-unspecified.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBUL_SETFSIZE\fR\fR
-.ad
-.RS 15n
+.Dd February 1, 2003
+.Dt ULIMIT 2
+.Os
+.Sh NAME
+.Nm ulimit
+.Nd get and set process limits
+.Sh SYNOPSIS
+.In ulimit.h
+.Ft long
+.Fo ulimit
+.Fa "int cmd" ,
+.No "/* newlimit */" Fa ...
+.Fc
+.Sh DESCRIPTION
+The
+.Fn ulimit
+function provides for control over process limits.
+It is effective in limiting the growth of regular files.
+Pipes are limited to
+.Dv PIPE_MAX
+bytes.
+.Pp
+The
+.Fa cmd
+values, defined in
+.In ulimit.h ,
+include:
+.Bl -tag -width "UL_GETFSIZE"
+.It Dv UL_GETFSIZE
+Return the soft file size limit of the process.
+The limit is in units of 512-byte blocks and is inherited by child processes.
+Files of any size can be read.
+The return value is the integer part of the soft file size limit divided by
+512.
+If the result cannot be represented as a
+.Vt "long int" ,
+the result is unspecified.
+.It Dv UL_SETFSIZE
 Set the hard and soft file size limits for output operations of the process to
-the value of the second argument, taken as a \fBlong int\fR. Any process may
-decrease its own hard limit, but only a process with appropriate privileges may
-increase the limit. The new file size limit is returned. The hard and soft file
-size limits are set to the specified value multiplied by 512.  If the result
-would overflow an \fBrlimit_t\fR, the actual value set is unspecified.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBUL_GMEMLIM\fR\fR
-.ad
-.RS 15n
-Get the maximum possible break value (see \fBbrk\fR(2)).
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBUL_GDESLIM\fR\fR
-.ad
-.RS 15n
+the value of the second argument, taken as a
+.Vt long int .
+Any process may decrease its own hard limit, but only a process with
+appropriate privileges may increase the limit.
+The new file size limit is returned.
+The hard and soft file size limits are set to the specified value multiplied by
+512.
+If the result would overflow an
+.Vt rlimit_t ,
+the actual value set is unspecified.
+.It Dv UL_GMEMLIM
+Get the maximum possible break value
+.Pq see Xr brk 2 .
+.It Dv UL_GDESLIM
 Get the current value of the maximum number of open files per process
 configured in the system.
-.RE
-
-.SH RETURN VALUES
-.sp
-.LP
-Upon successful completion, \fBulimit()\fR returns the value of the requested
-limit.  Otherwise, \fB\(mi1\fR is returned, the limit is not changed, and
-\fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.sp
-.LP
-The \fBulimit()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-The \fIcmd\fR argument is not valid.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 10n
-A process that has not asserted {\fBPRIV_SYS_RESOURCE\fR} in its effective set
-is trying to increase its file size limit.
-.RE
-
-.SH USAGE
-.sp
-.LP
+.El
+.Sh RETURN VALUES
+Upon successful completion, the
+.Fn ulimit
+function returns the value of the requested limit; otherwise the value -1 is
+returned, the limit is not changed and the global variable
+.Va errno
+is set to indicate the error.
+.Sh ERRORS
+The
+.Fn ulimit
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EINVAL
+The cmd argument is not valid.
+.It Bq Er EPERM
+A process that has not asserted
+.Brq Dv PRIV_SYS_RESOURCE
+in its effective set is trying to increase its file size limit.
+.El
+.Sh USAGE
 Since all return values are permissible in a successful situation, an
-application wishing to check for error situations should set \fBerrno\fR to 0,
-then call \fBulimit()\fR, and if it returns \fB\(mi1\fR, check if \fBerrno\fR
+application wishing to check for error situations should set
+.Va errno
+to 0,
+then call
+.Fn ulimit ,
+and if it returns -1, check if
+.Va errno
 is non-zero.
-.sp
-.LP
-The \fBgetrlimit()\fR and \fBsetrlimit()\fR functions provide a more general
+.Pp
+The
+.Fn getrlimit
+and
+.Fn setrlimit
+functions provide a more general
 interface for controlling process limits, and are preferred over
-\fBulimit()\fR. See \fBgetrlimit\fR(2).
-.SH ATTRIBUTES
-.sp
-.LP
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-Interface Stability	Standard
-.TE
-
-.SH SEE ALSO
-.sp
-.LP
-\fBbrk\fR(2), \fBgetrlimit\fR(2), \fBwrite\fR(2), \fBattributes\fR(5),
-\fBprivileges\fR(5), \fBstandards\fR(5)
+.Fn ulimit .
+See
+.Xr getrlimit 2
+.Sh INTERFACE STABILITY
+.Sy Standard
+.Sh SEE ALSO
+.Xr brk 2 ,
+.Xr getrlimit 2 ,
+.Xr write 2 ,
+.Xr attributes 5 ,
+.Xr privileges 5 ,
+.Xr standards 5

@@ -1,74 +1,93 @@
-'\" te
-.\"  Copyright 1989 AT&T  Copyright (c) 1997, Sun Microsystems, Inc.  All Rights Reserved
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH SWAPCTL 2 "Sep 25, 1997"
-.SH NAME
-swapctl \- manage swap space
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/stat.h>
-#include <sys/swap.h>
-
-\fBint\fR \fBswapctl\fR(\fBint\fR \fIcmd\fR, \fBvoid *\fR\fIarg\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBswapctl()\fR function adds,  deletes, or returns information about swap
-resources. \fIcmd\fR specifies one of the following options contained in
-<\fBsys/swap.h\fR>:
-.sp
-.in +2
-.nf
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright 1989 AT&T
+.\" Copyright (c) 1997, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd September 25, 1997
+.Dt SWAPCTL 2
+.Os
+.Sh NAME
+.Nm swapctl
+.Nd manage swap space
+.Sh SYNOPSIS
+.In sys/stat.h
+.In sys/swap.h
+.Ft int
+.Fn swapctl "int cmd" "void *arg"
+.Sh DESCRIPTION
+The
+.Fn swapctl
+function adds, deletes, or returns information about swap
+resources.
+.Fa cmd
+specifies one of the following options contained in
+.In sys/swap.h :
+.Bd -literal -offset indent
 SC_ADD        /* add a resource for swapping */
 SC_LIST       /* list the resources for swapping */
 SC_REMOVE     /* remove a resource for swapping */
 SC_GETNSWP    /* return number of swap resources */
-.fi
-.in -2
-
-.sp
-.LP
-When \fBSC_ADD\fR or \fBSC_REMOVE\fR is specified, \fIarg\fR is a pointer to a
-\fBswapres\fR structure containing the following members:
-.sp
-.in +2
-.nf
+.Ed
+.Pp
+When
+.Dv SC_ADD
+or
+.Dv SC_REMOVE
+is specified,
+.Fa arg
+is a pointer to a
+.Vt swapres
+structure containing the following members:
+.Bd -literal -offset indent
 char    *sr_name;    /* pathname of resource */
 off_t   sr_start;    /* offset to start of swap area */
 off_t   sr_length;   /* length of swap area */
-.fi
-.in -2
-
-.sp
-.LP
-The \fBsr_start\fR and \fBsr_length\fR members are specified in 512-byte
-blocks. A swap resource can only be removed by specifying the same values for
-the \fBsr_start\fR and \fBsr_length\fR members as were specified when it was
-added. Swap resources need not be removed in the order in which they were
-added.
-.sp
-.LP
-When \fBSC_LIST\fR is specified, \fIarg\fR is a pointer to a \fBswaptable\fR
+.Ed
+.Pp
+The
+.Va sr_start
+and
+.Va sr_length
+members are specified in 512-byte blocks.
+A swap resource can only be removed by specifying the same values for
+the
+.Va sr_start
+and
+.Va sr_length
+members as were specified when it was added.
+Swap resources need not be removed in the order in which they were added.
+.Pp
+When
+.Dv SC_LIST
+is specified,
+.Fa arg
+is a pointer to a
+.Vt swaptable
 structure containing the following members:
-.sp
-.in +2
-.nf
+.Bd -literal -offset indent
 int             swt_n;       /* number of swapents following */
 struct swapent  swt_ent[];   /* array of swt_n swapents */
-.fi
-.in -2
-
-.sp
-.LP
-A \fBswapent\fR structure contains the following members:
-.sp
-.in +2
-.nf
+.Ed
+.Pp
+The
+.Vt swapent
+structure contains the following members:
+.Bd -literal -offset indent
 char   *ste_path;    /* name of the swap file */
 off_t  ste_start;    /* starting block for swapping */
 off_t  ste_length;   /* length of swap area */
@@ -76,243 +95,207 @@ long   ste_pages;    /* number of pages for swapping */
 long   ste_free;     /* number of ste_pages free */
 long   ste_flags;    /* ST_INDEL bit set if swap file */
                      /* is now being deleted */
-.fi
-.in -2
-
-.sp
-.LP
-The \fBSC_LIST\fR function causes \fBswapctl()\fR to return at most \fBswt_n\fR
-entries. The return value of \fBswapctl()\fR is the number actually returned.
-The \fBST_INDEL\fR bit is turned on in \fBste_flags\fR if the swap file is in
-the process of being deleted.
-.sp
-.LP
-When \fBSC_GETNSWP\fR is specified, \fBswapctl()\fR returns as its value the
-number of swap resources in use. \fIarg\fR is ignored for this operation.
-.sp
-.LP
-The \fBSC_ADD\fR and \fBSC_REMOVE\fR functions will fail if calling process
-does not have appropriate privileges.
-.SH RETURN VALUES
-.sp
-.LP
-Upon successful completion, the function \fBswapctl()\fR returns a value of
-\fB0\fR for \fBSC_ADD\fR or \fBSC_REMOVE\fR, the number of \fBstruct\fR
-\fBswapent\fR entries actually returned  for \fBSC_LIST\fR, or the number of
-swap resources in use for \fBSC_GETNSWP\fR. Upon failure, the function
-\fBswapctl()\fR returns a value  of \fB\(mi1\fR and sets \fBerrno\fR to
-indicate an error.
-.SH ERRORS
-.sp
-.LP
-Under the following conditions, the function \fBswapctl()\fR fails and sets
-\fBerrno\fR to:
-.sp
-.ne 2
-.na
-\fB\fBEEXIST\fR\fR
-.ad
-.RS 16n
-Part of the range specified by \fBsr_start\fR and \fBsr_length\fR is already
-being used for swapping on the specified resource (\fBSC_ADD\fR).
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 16n
-Either \fIarg\fR, \fBsr_name\fR, or \fBste_path\fR points to an illegal
-address.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 16n
+.Ed
+.Pp
+The
+.Dv SC_LIST
+function causes
+.Fn swapctl
+to return at most
+.Va swt_n
+entries.
+The return value of
+.Fn swapctl
+is the number actually returned.
+The
+.Dv ST_INDEL
+bit is turned on in
+.Va ste_flags
+if the swap file is in the process of being deleted.
+.Pp
+When
+.Dv SC_GETNSWP
+is specified,
+.Fn swapctl
+returns as its value the number of swap resources in use.
+.Fa arg
+is ignored for this operation.
+.Pp
+The
+.Dv SC_ADD
+and
+.Dv SC_REMOVE
+functions will fail if calling process does not have appropriate privileges.
+.Sh RETURN VALUES
+Upon successful completion, the
+.Fn swapctl
+function returns the value 0 for
+.Dv SC_ADD
+or
+.Dv SC_REMOVE ,
+the number of
+.Vt struct swapent
+entries actually returned for
+.Dv SC_LIST
+or the number of swap resources in use for
+.Dv SC_GETNSWP ;
+otherwise the value -1 is returned and the global variable
+.Va errno
+is set to indicate the error.
+.Sh ERRORS
+The
+.Fn swapctl
+function may fail if:
+.Bl -tag -width Er
+.It Bq Er EEXIST
+Part of the range specified by
+.Va sr_start
+and
+.Va sr_length
+is already
+being used for swapping on the specified resource
+.Pq Dv SC_ADD .
+.It Bq Er EFAULT
+Either
+.Fa arg , Va sr_name
+or
+.Va ste_path
+points to an illegal address.
+.It Bq Er EINVAL
 The specified function value is not valid, the path specified is not a swap
-resource (\fBSC_REMOVE\fR), part of the range specified by \fBsr_start\fR and
-\fBsr_length\fR lies outside the resource specified (\fBSC_ADD\fR), or the
-specified swap area is less than one page (\fBSC_ADD\fR).
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEISDIR\fR\fR
-.ad
-.RS 16n
-The path specified for \fBSC_ADD\fR is a directory.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBELOOP\fR\fR
-.ad
-.RS 16n
+resource
+.Pq Dv SC_REMOVE ,
+part of the range specified by
+.Va sr_start
+and
+.Va sr_length
+lies outside the resource specified
+.Pq Dv SC_ADD
+or the specified swap area is less than one page
+.Pq Dv SC_ADD .
+.It Bq Er EISDIR
+The path specified for
+.Dv SC_ADD
+is a directory.
+.It Bq Er ELOOP
 Too many symbolic links were encountered in translating the pathname provided
-to \fBSC_ADD\fR or \fBSC_REMOVE\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENAMETOOLONG\fR\fR
-.ad
-.RS 16n
-The length of a component of the path specified for \fBSC_ADD\fR or
-\fBSC_REMOVE\fR exceeds \fBNAME_MAX\fR characters or the length of the path
-exceeds \fBPATH_MAX\fR characters and \fB_POSIX_NO_TRUNC\fR is in effect.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOENT\fR\fR
-.ad
-.RS 16n
-The pathname specified for \fBSC_ADD\fR or \fBSC_REMOVE\fR does not exist.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOMEM\fR\fR
-.ad
-.RS 16n
-An insufficient number of \fBstruct\fR \fBswapent\fR structures were provided
-to \fBSC_LIST\fR, or there were insufficient system storage resources available
-during an \fBSC_ADD\fR or \fBSC_REMOVE\fR, or the system would not have enough
-swap space after an \fBSC_REMOVE\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOSYS\fR\fR
-.ad
-.RS 16n
-The pathname specified for \fBSC_ADD\fR or \fBSC_REMOVE\fR is not a file or
-block special device.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOTDIR\fR\fR
-.ad
-.RS 16n
-Pathname provided to \fBSC_ADD\fR or \fBSC_REMOVE\fR contained a component in
-the path prefix that was not a directory.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 16n
-The {\fBPRIV_SYS_MOUNT\fR} was not asserted in the effective set of the calling
-process.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEROFS\fR\fR
-.ad
-.RS 16n
-The pathname specified for \fBSC_ADD\fR is a read-only file system.
-.RE
-
-.sp
-.LP
-Additionally, the \fBswapctl()\fR function will fail for 32-bit interfaces if:
-.sp
-.ne 2
-.na
-\fB\fBEOVERFLOW\fR\fR
-.ad
-.RS 13n
+to
+.Dv SC_ADD
+or
+.Dv SC_REMOVE .
+.It Bq Er ENAMETOOLONG
+The length of a component of the path specified for
+.Dv SC_ADD
+or
+.Dv SC_REMOVE
+exceeds
+.Dv NAME_MAX
+characters or the length of the path exceeds
+.Dv PATH_MAX
+characters and
+.Dv _POSIX_NO_TRUNC
+is in effect.
+.It Bq Er ENOENT
+The pathname specified for
+.Dv SC_ADD
+or
+.Dv SC_REMOVE
+does not exist.
+.It Bq Er ENOMEM
+An insufficient number of
+.Vt swapent
+structures were provided
+to
+.Dv SC_LIST ,
+or there were insufficient system storage resources available
+during an
+.Dv SC_ADD
+or
+.Dv SC_REMOVE
+or the system would not have enough swap space after an
+.Dv SC_REMOVE .
+.It Bq Er ENOSYS
+The pathname specified for
+.Dv SC_ADD
+or
+.Dv SC_REMOVE
+is not a file or block special device.
+.It Bq Er ENOTDIR
+The pathname provided to
+.Dv SC_ADD
+or
+.Dv SC_REMOVE
+contained a component in the path prefix that was not a directory.
+.It Bq Er EPERM
+The
+.Brq Dv PRIV_SYS_MOUNT
+privilege was not asserted in the effective set of the calling process.
+.It Bq Er EROFS
+The pathname specified for
+.Dv SC_ADD
+is a read-only file system.
+.El
+.Pp
+Additionally, the
+.Fn swapctl
+function will fail for 32-bit interfaces if:
+.Bl -tag -width Er
+.It Bq Er EOVERFLOW
 The amount of swap space configured on the machine is too large to be
 represented by a 32-bit quantity.
-.RE
-
-.SH EXAMPLES
-.LP
-\fBExample 1 \fRThe usage of the \fBSC_GETNSWP\fR and \fBSC_LIST\fR commands.
-.sp
-.LP
-The following example demonstrates the usage of the \fBSC_GETNSWP\fR and
-\fBSC_LIST\fR commands.
-
-.sp
-.in +2
-.nf
+.El
+.Sh EXAMPLES
+The following example demonstrates the usage of the
+.Dv SC_GETNSWP
+and
+.Dv SC_LIST
+commands:
+.Bd -literal
 #include <sys/stat.h>
 #include <sys/swap.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <err.h>
 
 #define MAXSTRSIZE 80
 
-main(argc, argv)
-    int            argc;
-    char           *argv[];
+int
+main(int argc, char *argv[])
 {
-    swaptbl_t      *s;
-    int            i, n, num;
-    char           *strtab;    /* string table for path names */
+    swaptbl_t *s;
+    int i, n, num;
+    char *strtab;    /* string table for path names */
 
 again:
-    if ((num = swapctl(SC_GETNSWP, 0)) == -1) {
-        perror("swapctl: GETNSWP");
-        exit(1);
-    }
+    if ((num = swapctl(SC_GETNSWP, 0)) == -1)
+        err(1, "swapctl: GETNSWP");
     if (num == 0) {
         fprintf(stderr, "No Swap Devices Configured\en");
         exit(2);
     }
     /* allocate swaptable for num+1 entries */
-    if ((s = (swaptbl_t *)
-        malloc(num * sizeof(swapent_t) +
-            sizeof(struct swaptable))) ==
-        (void *) 0) {
-        fprintf(stderr, "Malloc Failed\en");
-        exit(3);
-    }
+    if ((s = reallocarray(NULL, num, sizeof(swapent_t))) == NULL)
+        err(3, "reallocarray");
     /* allocate num+1 string holders */
-    if ((strtab = (char *)
-        malloc((num + 1) * MAXSTRSIZE)) == (void *) 0) {
-        fprintf(stderr, "Malloc Failed\en");
-        exit(3);
-    }
+    if ((strtab = reallocarray(NULL, num + 1, MAXSTRSIZE)) == NULL)
+        err(3, "reallocarray");
     /* initialize string pointers */
-    for (i = 0; i < (num + 1); i++) {
+    for (i = 0; i < (num + 1); i++)
         s->swt_ent[i].ste_path = strtab + (i * MAXSTRSIZE);
-    }
 
     s->swt_n = num + 1;
-    if ((n = swapctl(SC_LIST, s)) < 0) {
-        perror("swapctl");
-        exit(1);
-    }
+    if ((n = swapctl(SC_LIST, s)) < 0)
+        err(1, "swapctl");
     if (n > num) {        /* more were added */
         free(s);
         free(strtab);
         goto again;
     }
+
     for (i = 0; i < n; i++)
         printf("%s %ld\en",
             s->swt_ent[i].ste_path, s->swt_ent[i].ste_pages);
 }
-.fi
-.in -2
-
-.SH SEE ALSO
-.sp
-.LP
-\fBprivileges\fR(5)
+.Ed
+.Sh SEE ALSO
+.Xr privileges 5

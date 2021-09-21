@@ -1,362 +1,338 @@
-'\" te
-.\" Copyright (c) 2009, Sun Microsystems, Inc. All Rights Reserved.
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
 .\" Copyright 1989 AT&T
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH SYSINFO 2 "Apr 27, 2020"
-.SH NAME
-sysinfo \- get and set system information strings
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/systeminfo.h>
-
-\fBint\fR \fBsysinfo\fR(\fBint\fR \fIcommand\fR, \fBchar *\fR\fIbuf\fR, \fBlong\fR \fIcount\fR);
-.fi
-
-.SH DESCRIPTION
-.LP
-The \fBsysinfo()\fR function copies information relating to the operating
+.\" Copyright (c) 2009, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd April 27, 2020
+.Dt SYSINFO 2
+.Os
+.Sh NAME
+.Nm sysinfo
+.Nd get and set system information strings
+.Sh SYNOPSIS
+.In sys/systeminfo.h
+.Ft int
+.Fn sysinfo "int command" "char *buf" "long count"
+.Sh DESCRIPTION
+The
+.Fn sysinfo
+function copies information relating to the operating
 system on which the process is executing into the buffer pointed to by
-\fIbuf\fR. It can also set certain information where appropriate commands are
-available. The \fIcount\fR parameter indicates the size of the buffer.
-.sp
-.LP
-The POSIX P1003.1 interface (see \fBstandards\fR(5)) \fBsysconf\fR(3C) provides
-a similar class of configuration information, but returns an integer rather
-than a string.
-.sp
-.LP
-The values for \fIcommand\fR are as follows:
-.sp
-.ne 2
-.na
-\fB\fBSI_SYSNAME\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR the string that would be returned
-by \fBuname\fR(2) in the \fIsysname\fR field. This is the name of the
-implementation of the operating system, for example, \fBSunOS\fR or \fBUTS\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_HOSTNAME\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string that names the present
-host machine. This is the string that would be returned by \fBuname()\fR in the
-\fInodename\fR field. This hostname or nodename is often the name the machine is
-known by locally. The \fIhostname\fR is the name of this machine as a node in
-some network. Different networks might have different names for the node, but
-presenting the nodename to the appropriate network directory or name-to-address
-mapping service should produce a transport end point address. The name might
-not be fully qualified. Internet host names can be up to \fB256\fR bytes in
-length (plus the terminating null).
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_SET_HOSTNAME\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy the null-terminated contents of the array pointed to by \fIbuf\fR into the
-string maintained by the kernel whose value will be returned by succeeding
-calls to \fBsysinfo()\fR with the command \fBSI_HOSTNAME\fR. This command
-requires that {\fBPRIV_SYS_ADMIN\fR} is asserted in the effective set of the
-calling process.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_RELEASE\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR the string that would be returned
-by \fBuname\fR(2) in the \fIrelease\fR field. Typical values might be \fB5.2\fR
-or \fB4.1\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_VERSION\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR the string that would be returned
-by \fBuname\fR(2) in the \fIversion\fR field. The syntax and semantics of this
-string are defined by the system provider.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_MACHINE\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR the string that would be returned
-by \fBuname\fR(2) in the \fImachine\fR field, for example, \fBsun4u\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_ARCHITECTURE\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string describing the basic
-instruction set architecture of the current system, for example, \fBsparc\fR,
-\fBmc68030\fR, \fBm32100\fR, or \fBi386\fR. These names might not match
-predefined names in the C language compilation system.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_ARCHITECTURE_64\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string describing the 64-bit
-instruction set architecture of the current system, for example, \fBsparcv9\fR
-or \fBamd64\fR.  These names might not match predefined names in the C language
-compilation system.  This subcode is not recognized on systems that do not
-allow a 64-bit application to run.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_ARCHITECTURE_32\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string describing the 32-bit
-instruction set architecture of the current system, for example, \fBsparc\fR or
-\fBi386\fR.  These names might not match predefined names in the C language
-compilation system.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_ARCHITECTURE_K\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string describing the kernel
-instruction set architecture of the current system for example \fBsparcv9\fR or
-\fBi386\fR.  These names might not match predefined names in the C language
-compilation system.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_ARCHITECTURE_NATIVE\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string describing the native
-instruction set architecture of the current system, for example \fBsparcv9\fR
-or \fBi386\fR.  These names might not match predefined names in the C language
-compilation system.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_ADDRESS_WIDTH\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string describing the number
-of bits in the address space of the native instruction set; e.g., \fB32\fR
-or \fB64\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_ISALIST\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR the names of the variant
-instruction set architectures executable on the current system.
-.sp
+.Fa buf .
+It can also set certain information where appropriate commands are
+available.
+The
+.Fa count
+parameter indicates the size of the buffer.
+.Pp
+The
+.St -p1003.1
+interface
+.Po see Xr standards 5 Pc Xr sysconf 3C
+provides a similar class of configuration information, but returns an integer
+rather than a string.
+.Pp
+The values for
+.Fa command
+are as follows:
+.Bl -tag -width Ds
+.It Dv SI_SYSNAME
+Copy into the array pointed to by
+.Fa buf
+the string that would be returned
+by
+.Xr uname 2
+in the
+.Va sysname
+field.
+This is the name of the
+implementation of the operating system, for example,
+.Dq SunOS
+or
+.Dq UTS .
+.It Dv SI_HOSTNAME
+Copy into the array pointed to by
+.Fa buf
+a string that names the present host machine.
+This is the string that would be returned by
+.Fn uname
+in the
+.Va nodename
+field.
+This hostname or nodename is often the name the machine is known by locally.
+The hostname is the name of this machine as a node in some network.
+Different networks might have different names for the node, but presenting the
+nodename to the appropriate network directory or name-to-address mapping
+service should produce a transport end point address.
+The name might not be fully qualified.
+Internet host names can be up to 256 bytes in length (plus the terminating
+null).
+.It Dv SI_SET_HOSTNAME
+Copy the null-terminated contents of the array pointed to by
+.Fa buf
+into the string maintained by the kernel whose value will be returned by
+succeeding calls to
+.Fn sysinfo
+with the
+command
+.Dv SI_HOSTNAME .
+This command
+requires that
+.Brq Dv PRIV_SYS_ADMIN
+is asserted in the effective set of the calling process.
+.It Dv SI_RELEASE
+Copy into the array pointed to by
+.Fa buf
+the string that would be returned by
+.Xr uname 2
+in the release field.
+Typical values might be
+.Dq 5.2
+or
+.Dq 4.1 .
+.It Dv SI_VERSION
+Copy into the array pointed to by
+.Fa buf
+the string that would be returned by
+.Xr uname 2
+in the version field.
+The syntax and semantics of this string are defined by the system provider.
+.It Dv SI_MACHINE
+Copy into the array pointed to by
+.Fa buf
+the string that would be returned by
+.Xr uname 2
+in the machine field, for example,
+.Dq sun4u .
+.It Dv SI_ARCHITECTURE
+Copy into the array pointed to by
+.Fa buf
+a string describing the basic instruction set architecture of the current
+system, for example,
+.Dq sparc ,
+.Dq mc68030 ,
+.Dq m32100
+or
+.Dq i386 .
+These names might not match predefined names in the C language compilation
+system.
+.It Dv SI_ARCHITECTURE_64
+Copy into the array pointed to by
+.Fa buf
+a string describing the 64-bit instruction set architecture of the current
+system, for example,
+.Dq sparcv9
+or
+.Dq amd64 .
+These names might not match predefined names in the C language compilation
+system.
+This subcode is not recognized on systems that do not allow a 64-bit
+application to run.
+.It Dv SI_ARCHITECTURE_32
+Copy into the array pointed to by
+.Fa buf
+a string describing the 32-bit instruction set architecture of the current
+system, for example,
+.Dq sparc
+or
+.Dq i386 .
+These names might not match predefined names in the C language compilation
+system.
+.It Dv SI_ARCHITECTURE_K
+Copy into the array pointed to by
+.Fa buf
+a string describing the kernel
+instruction set architecture of the current system for example
+.Dq sparcv9
+or
+.Dq i386 .
+These names might not match predefined names in the C language compilation
+system.
+.It Dv SI_ARCHITECTURE_NATIVE
+Copy into the array pointed to by
+.Fa buf
+a string describing the native instruction set architecture of the current
+system, for example
+.Dq sparcv9
+or
+.Dq i386 .
+These names might not match predefined names in the C language compilation
+system.
+.It Dv SI_ADDRESS_WIDTH
+Copy into the array pointed to by
+.Fa buf
+a string describing the number of bits in the address space of the native
+instruction set; e.g.,
+.Dq 32
+or
+.Dq 64 .
+.It Dv SI_ISALIST
+Copy into the array pointed to by
+.Dq buf
+the names of the variant instruction set architectures executable on the
+current system.
+.Pp
 The names are space-separated and are ordered in the sense of best performance.
 That is, earlier-named instruction sets might contain more instructions than
 later-named instruction sets; a program that is compiled for an earlier-named
 instruction set will most likely run faster on this machine than the same
 program compiled for a later-named instruction set.
-.sp
+.Pp
 Programs compiled for an instruction set that does not appear in the list will
 most likely experience performance degradation or not run at all on this
 machine.
-.sp
-The instruction set names known to the system are listed in \fBisalist\fR(5);
+.Pp
+The instruction set names known to the system are listed in
+.Xr isalist 5 ;
 these names might not match predefined names or compiler options in the C
 language compilation system.
-.sp
-This command is obsolete and might be removed in a future release. See
-\fBgetisax\fR(2) and the \fILinker and Libraries Guide\fR for a better way to
-handle instruction set extensions.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_PLATFORM\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string describing the specific
-model of the hardware platform, for example, \fBSUNW,Sun-Blade-1500\fR,
-\fBSUNW,Sun-Fire-T200\fR, or \fBi86pc\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_HW_PROVIDER\fR\fR
-.ad
-.sp .6
-.RS 4n
+.Pp
+This command is obsolete and might be removed in a future release.
+See
+.Xr getisax 2
+and the
+.%T Linker and Libraries Guide
+for a better way to handle instruction set extensions.
+.It Dv SI_PLATFORM
+Copy into the array pointed to by
+.Fa buf
+a string describing the specific
+model of the hardware platform, for example,
+.Dq SUNW,Sun-Blade-1500 ,
+.Dq SUNW,Sun-Fire-T200
+or
+.Dq i86pc .
+.It Dv SI_HW_PROVIDER
 Copies the name of the hardware manufacturer into the array pointed to by
-\fIbuf\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_HW_SERIAL\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR a string which is the ASCII
-representation of the hardware-specific serial number of the physical machine
-on which the function is executed. This might be implemented in Read-Only
-Memory, using software constants set when building the operating system, or by
-other means, and might contain non-numeric characters. If the function is
-executed within a non-global zone that emulates a host identifier, then the
-ASCII representation of the zone's host identifier is copied into the array
-pointed to by \fIbuf\fR. It is anticipated that manufacturers will not issue
-the same "serial number" to more than one physical machine. The pair of strings
-returned by \fBSI_HW_PROVIDER\fR and \fBSI_HW_SERIAL\fR is not guaranteed to be
-unique across all vendor's SVR4 implementations and could change over the
-lifetime of a given system.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_SRPC_DOMAIN\fR\fR
-.ad
-.sp .6
-.RS 4n
+.Fa buf .
+.It Dv SI_HW_SERIAL
+Copy into the array pointed to by
+.Fa buf
+a string which is the ASCII representation of the hardware-specific serial
+number of the physical machine on which the function is executed.
+This might be implemented in Read-Only Memory, using software constants set
+when building the operating system, or by other means, and might contain
+non-numeric characters.
+If the function is executed within a non-global zone that emulates a host
+identifier, then the ASCII representation of the zone's host identifier is
+copied into the array pointed to by
+.Fa buf .
+It is anticipated that manufacturers will not issue
+the same "serial number" to more than one physical machine.
+The pair of strings returned by
+.Dv SI_HW_PROVIDER
+and
+.Dv SI_HW_SERIAL
+is not guaranteed to be unique across all vendor's SVR4 implementations and
+could change over the lifetime of a given system.
+.It Dv SI_SRPC_DOMAIN
 Copies the Secure Remote Procedure Call domain name into the array pointed to
-by \fIbuf\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_SET_SRPC_DOMAIN\fR\fR
-.ad
-.sp .6
-.RS 4n
-Set the string to be returned by \fBsysinfo()\fR with the \fBSI_SRPC_DOMAIN\fR
-command to the value contained in the array pointed to by \fIbuf\fR. This
-command requires that {\fBPRIV_SYS_ADMIN\fR} is asserted in the effective set
-of the calling process.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSI_DHCP_CACHE\fR\fR
-.ad
-.sp .6
-.RS 4n
-Copy into the array pointed to by \fIbuf\fR an ASCII string consisting of the
-ASCII hexadecimal encoding of the name of the interface configured by
-\fBboot\fR(1M) followed by the DHCPACK reply from the server. This command is
-intended for use only by the \fBdhcpagent\fR(1M) DHCP client daemon for the
-purpose of adopting the DHCP maintenance of the interface configured by
-\fBboot\fR.
-.RE
-
-.SH RETURN VALUES
-.LP
+by
+.Fa buf .
+.It Dv SI_SET_SRPC_DOMAIN
+Set the string to be returned by
+.Fn sysinfo
+with the
+.Dv SI_SRPC_DOMAIN
+command to the value contained in the array pointed to by
+.Fa buf .
+This
+command requires that
+.Brq Dv PRIV_SYS_ADMIN
+is asserted in the effective set of the calling process.
+.It Dv SI_DHCP_CACHE
+Copy into the array pointed to by
+.Fa buf
+an ASCII string consisting of the ASCII hexadecimal encoding of the name of the
+interface configured by
+.Xr boot 1M
+followed by the DHCPACK reply from the server.
+This command is intended for use only by the
+.Xr dhcpagent 1M
+DHCP client daemon for the purpose of adopting the DHCP maintenance of the
+interface configured by boot.
+.El
+.Sh RETURN VALUES
 Upon successful completion, the value returned indicates the buffer size in
 bytes required to hold the complete value and the terminating null character.
-If this value is no greater than the value passed in \fIcount\fR, the entire
-string was copied. If this value is greater than \fIcount\fR, the string copied
-into \fIbuf\fR has been truncated to  \fIcount\fR\(mi1 bytes plus a terminating
-null character.
-.sp
-.LP
-Otherwise, \(mi1 is returned and \fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.LP
-The \fBsysinfo()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 10n
-The \fIbuf\fR argument does not point to a valid address.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-The \fIcount\fR argument for a non-SET command is less than 0 or the data for a
-SET command exceeds the limits established by the implementation.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 10n
-The {\fBPRIV_SYS_ADMIN\fR} was not asserted in the effective set of the calling
-process.
-.RE
-
-.SH USAGE
-.LP
+If this value is no greater than the value passed in
+.Fa count ,
+the entire
+string was copied.
+If this value is greater than
+.Fa count ,
+the string copied
+into
+.Fa buf
+has been truncated to
+.Fa count Li - 1
+bytes plus a terminating null character.
+Otherwise the value -1 is returned and the global variable
+.Va errno
+is set to indicate the error.
+.Sh ERRORS
+The
+.Fn sysinfo
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EFAULT
+The
+.Fa buf
+argument does not point to a valid address.
+.It Bq Er EINVAL
+The
+.Fa count
+argument for a non-SET
+.Fa command
+is less than 0 or the data for a
+SET
+.Fa command
+exceeds the limits established by the implementation.
+.It Bq Er EPERM
+The
+.Brq Dv PRIV_SYS_ADMIN
+was not asserted in the effective set of the calling process.
+.El
+.Sh USAGE
 In many cases there is no corresponding programming interface to set these
 values; such strings are typically settable only by the system administrator
-modifying entries in the \fB/etc/system\fR directory or the code provided by
-the particular OEM reading a serial number or code out of read-only memory, or
-hard-coded in the version of the operating system.
-.sp
-.LP
-A good estimation for \fIcount\fR is 257, which is likely to cover all strings
-returned by this interface in typical installations.
-.SH SEE ALSO
-.LP
-\fBboot\fR(1M), \fBdhcpagent\fR(1M), \fBgetisax\fR(2), \fBuname\fR(2),
-\fBgethostid\fR(3C), \fBgethostname\fR(3C), \fBsysconf\fR(3C),
-\fBisalist\fR(5), \fBprivileges\fR(5), \fBstandards\fR(5), \fBzones\fR(5)
-.sp
-.LP
-\fILinker and Libraries Guide\fR
+modifying entries in the
+.Pa /etc/system
+directory or the code provided by the particular OEM reading a serial number or
+code out of read-only memory, or hard-coded in the version of the operating
+system.
+.Pp
+A good estimation for
+.Fa count
+is 257, which is likely to cover all strings returned by this interface in
+typical installations.
+.Sh SEE ALSO
+.Xr boot 1M ,
+.Xr dhcpagent 1M ,
+.Xr getisax 2 ,
+.Xr uname 2 ,
+.Xr gethostid 3C ,
+.Xr gethostname 3C ,
+.Xr sysconf 3C ,
+.Xr isalist 5 ,
+.Xr privileges 5 ,
+.Xr standards 5 ,
+.Xr zones 5
+.Rs
+.%T Linker and Libraries Guide
+.Re

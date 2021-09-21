@@ -44,104 +44,99 @@
 .\" Portions Copyright (c) 1992, X/Open Company Limited.  All Rights Reserved.
 .\" Copyright (c) 2004, Sun Microsystems, Inc.  All Rights Reserved.
 .\"
-.TH NICE 2 "Apr 1, 2004"
-.SH NAME
-nice \- change priority of a process
-.SH SYNOPSIS
-.LP
-.nf
-#include <unistd.h>
-
-\fBint\fR \fBnice\fR(\fBint\fR \fIincr\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBnice()\fR function allows a process to change its priority.  The
-invoking  process must be in a scheduling class that supports the \fBnice()\fR.
-.sp
-.LP
-The \fBnice()\fR function adds the value of  \fIincr\fR to the nice value of
-the calling process. A process's nice value is a non-negative number for which
-a greater positive value results in lower \fBCPU\fR priority.
-.sp
-.LP
-A maximum nice value of (2 * \fBNZERO\fR) \(mi1 and a minimum nice value of 0
-are imposed by the system. \fBNZERO\fR is defined in <\fBlimits.h\fR> with a
-default value of 20. Requests for values above or below these limits result in
-the nice value being set to the corresponding limit. A nice value of 40 is
-treated as 39.
-.sp
-.LP
-Calling the \fBnice()\fR function has no effect on the priority of processes or
-threads with policy \fBSCHED_FIFO\fR or \fBSCHED_RR\fR.
-.sp
-.LP
-Only a process with the {\fBPRIV_PROC_PRIOCNTL\fR} privilege can lower the nice
-value.
-.SH RETURN VALUES
-.sp
-.LP
-Upon successful completion, \fBnice()\fR returns the new nice value minus
-\fBNZERO\fR. Otherwise, \(mi1 is returned, the process's \fInice\fR value is
-not changed, and \fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.sp
-.LP
-The \fBnice()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-The \fBnice()\fR function is called by a process in a scheduling class other
-than time-sharing or fixed-priority.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 10n
-The \fIincr\fR argument is negative or greater than 40 and the
-{\fBPRIV_PROC_PRIOCNTL\fR} privilege is not asserted in the effective set of
-the calling process.
-.RE
-
-.SH USAGE
-.sp
-.LP
-The \fBpriocntl\fR(2) function is a more general interface to scheduler
-functions.
-.sp
-.LP
-Since \(mi1 is a permissible return value in a successful situation, an
-application wishing to check for error situations should set \fBerrno\fR to 0,
-then call \fBnice()\fR, and if it returns \fB\(mi1\fR, check to see if
-\fBerrno\fR is non-zero.
-.SH ATTRIBUTES
-.sp
-.LP
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-Interface Stability	Standard
-_
-MT-Level	Async-Signal-Safe
-.TE
-
-.SH SEE ALSO
-.sp
-.LP
-\fBnice\fR(1), \fBexec\fR(2), \fBpriocntl\fR(2), \fBgetpriority\fR(3C),
-\fBattributes\fR(5), \fBprivileges\fR(5), \fBstandards\fR(5)
+.Dd April 1, 2004
+.Dt NICE 2
+.Os
+.Sh NAME
+.Nm nice
+.Nd change priority of a process
+.Sh SYNOPSIS
+.In unistd.h
+.Ft int
+.Fn nice "int incr"
+.Sh DESCRIPTION
+The
+.Fn nice
+function allows a process to change its priority.
+The invoking process must be in a scheduling class that supports the
+.Fn nice .
+.Pp
+The
+.Fn nice
+function adds the value of
+.Fa incr
+to the nice value of the calling process.
+A process's nice value is a non-negative number for which a greater positive
+value results in lower CPU priority.
+.Pp
+A maximum nice value of
+.Po 2 * Dv NZERO Pc Ns -1
+and a minimum nice value of 0 are imposed by the system.
+.Dv NZERO
+is defined in
+.In limits.h
+with a default value of 20.
+Requests for values above or below these limits result in the nice value being
+set to the corresponding limit.
+A nice value of 40 is treated as 39.
+.Pp
+Calling the
+.Fn nice
+function has no effect on the priority of processes or
+threads with policy
+.Dv SCHED_FIFO
+or
+.Dv SCHED_RR .
+.Pp
+Only a process with the
+.Brq Dv PRIV_PROC_PRIOCNTL
+privilege can lower the nice value.
+.Sh RETURN VALUES
+Upon successful completion, the new nice value minus
+.Dv NZERO
+is returned; otherwise the value -1 is returned, the process' nice value is
+unchanged and the global variable
+.Va errno
+is set to indicate the error.
+.Sh ERRORS
+The
+.Fn nice
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EINVAL
+The
+.Fn nice
+function is called by a process in a scheduling class other than time-sharing
+or fixed-priority.
+.It Bq Er EPERM
+The
+.Fa incr
+argument is negative or greater than 40 and the
+.Brq Dv PRIV_PROC_PRIOCNTL
+privilege is not asserted in the effective set of the calling process.
+.El
+.Sh USAGE
+The
+.Xr priocntl 2
+function is a more general interface to scheduler functions.
+.Pp
+Since -1 is a permissible return value in a successful situation, an
+application wishing to check for error situations should set
+.Va errno
+to 0, then call
+.Fn nice ,
+and if it returns -1, check to see if
+.Va errno
+is non-zero.
+.Sh INTERFACE STABILITY
+.Sy Standard
+.Sh MT-LEVEL
+.Sy Async-Signal-Safe
+.Sh SEE ALSO
+.Xr nice 1 ,
+.Xr exec 2 ,
+.Xr priocntl 2 ,
+.Xr getpriority 3C ,
+.Xr attributes 5 ,
+.Xr privileges 5 ,
+.Xr standards 5

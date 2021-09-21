@@ -1,178 +1,226 @@
-'\" te
-.\" Copyright (c) 2009, Sun Microsystems, Inc.  All Rights Reserved.
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License. You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.
-.\"  See the License for the specific language governing permissions and limitations under the License. When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with
-.\" the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH PSET_BIND 2 "Mar 13, 2009"
-.SH NAME
-pset_bind \- bind LWPs to a set of processors
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/pset.h>
-
-\fBint\fR \fBpset_bind\fR(\fBpsetid_t\fR \fIpset\fR, \fBidtype_t\fR \fIidtype\fR, \fBid_t\fR \fIid\fR, \fBpsetid_t *\fR\fIopset\fR);
-.fi
-
-.SH DESCRIPTION
-.LP
-The \fBpset_bind()\fR function binds the \fBLWP\fR or set of \fBLWPs\fR
-specified by \fIidtype\fR and \fIid\fR to the processor set specified by
-\fIpset\fR. If \fIopset\fR is not \fINULL\fR, \fBpset_bind()\fR sets the
-\fBpsetid_t\fR variable pointed to by \fIopset\fR to the previous processor set
-binding of one of the specified \fBLWP\fR, or to \fBPS_NONE\fR if the selected
-\fBLWP\fR was not bound.
-.sp
-.LP
-If \fIidtype\fR is \fBP_PID\fR, the binding affects all \fBLWP\fRs of the
-process with process \fBID\fR (PID) \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_LWPID\fR, the binding affects the \fBLWP\fR of the
-current process with \fBLWP ID\fR \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_TASKID\fR, the binding affects all LWPs of all
-processes with task ID \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_PROJID\fR, the binding affects all LWPs of all
-processes with project ID \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_ZONEID\fR, the binding affects all LWPs of all
-processes with zone ID \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_CTID\fR, the binding affects all LWPs of all processes
-with process contract ID \fIid\fR.
-.sp
-.LP
-If \fIid\fR is \fBP_MYID\fR, the specified LWP, process, task, process, zone,
-or process contract is the current one.
-.sp
-.LP
-If \fIpset\fR is \fBPS_NONE\fR, the processor set bindings of the specified
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright (c) 2009, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd March 13, 2009
+.Dt PSET_BIND 2
+.Os
+.Sh NAME
+.Nm pset_bind
+.Nd bind LWPs to a set of processors
+.Sh SYNOPSIS
+.In sys/pset.h
+.Ft int
+.Fo pset_bind
+.Fa "psetid_t pset"
+.Fa "idtype_t idtype"
+.Fa "id_t id"
+.Fa "psetid_t *opset"
+.Fc
+.Sh DESCRIPTION
+The
+.Fn pset_bind
+function binds the LWP or set of LWPs specified by
+.Fa idtype
+and
+.Fa id
+to the processor set specified by
+.Fa pset .
+If
+.Fa opset
+is not
+.Dv NULL ,
+.Fn pset_bind
+sets the
+.Vt psetid_t
+variable pointed to by
+.Fa opset
+to the previous processor set binding of one of the specified LWP, or to
+.Dv PS_NONE
+if the selected LWP was not bound.
+.Pp
+If
+.Fa idtype
+is
+.Dv P_PID ,
+the binding affects all LWPs of the process with process ID (PID)
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_LWPID ,
+the binding affects the LWP of the current process with LWP ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_TASKID ,
+the binding affects all LWPs of all processes with task ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_PROJID ,
+the binding affects all LWPs of all processes with project ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_ZONEID ,
+the binding affects all LWPs of all
+processes with zone ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_CTID ,
+the binding affects all LWPs of all processes with process contract ID
+.Fa id .
+.Pp
+If
+.Fa id
+is
+.Dv P_MYID ,
+the specified LWP, process, task, process, zone, or process contract is the
+current one.
+.Pp
+If
+.Fa pset
+is
+.Dv PS_NONE ,
+the processor set bindings of the specified
 LWPs are cleared.
-.sp
-.LP
-If \fIpset\fR is \fBPS_QUERY\fR, the processor set bindings are not changed.
-.sp
-.LP
-If \fIpset\fR is \fBPS_MYID\fR, the specified LWPs are bound to the same
-processor set as the caller. If the caller is not bound to a processor set, the
-processor set bindings are cleared.
-.sp
-.LP
-The {\fBPRIV_SYS_RES_CONFIG\fR} privilege must be asserted in the effective set
-of the calling process or \fIpset\fR must be \fBPS_QUERY\fR.
-.sp
-.LP
-LWPs that have been bound to a processor with \fBprocessor_bind\fR(2) may also
-be bound to a processor set if the processor is part of the processor set. If
-this occurs, the binding to the processor remains in effect. If the processor
-binding is later removed, the processor set binding becomes effective.
-.sp
-.LP
-Processor set bindings are inherited across \fBfork\fR(2) and \fBexec\fR(2).
-.SH RETURN VALUES
-.LP
-Upon successful completion, 0 is returned. Otherwise, \(mi1 is returned and
-\fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.LP
-The \fBpset_bind()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEBUSY\fR\fR
-.ad
-.RS 11n
-One of the \fBLWP\fRs is bound to a processor, and the specified processor set
-does not include that processor.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 11n
-The location pointed to by \fIopset\fR was not \fINULL\fR and not writable by
-the user.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 11n
-An invalid processor set \fBID\fR was specified;  or \fIidtype\fR was not
-\fBP_PID\fR, \fBP_LWPID\fR, \fBP_PROJID\fR, \fBP_TASKID\fR, \fBP_ZONEID\fR, or
-\fBP_CTID\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOTSUP\fR\fR
-.ad
-.RS 11n
-The pools facility is active.  See \fBpooladm\fR(1M) and
-\fBpool_set_status\fR(3POOL) for information about enabling and disabling the
-pools facility. Processes can be bound to pools using the \fBpoolbind\fR(1M)
-utility or the \fBpool_set_binding\fR(3POOL) function.
-.sp
+.Pp
+If
+.Fa pset
+is
+.Dv PS_QUERY ,
+the processor set bindings are not changed.
+.Pp
+If
+.Fa pset
+is
+.Dv PS_MYID ,
+the specified LWPs are bound to the same processor set as the caller.
+If the caller is not bound to a processor set, the processor set bindings are
+cleared.
+.Pp
+The
+.Brq Dv PRIV_SYS_RES_CONFIG
+privilege must be asserted in the effective set
+of the calling process or
+.Fa pset
+must be
+.Dv PS_QUERY .
+.Pp
+LWPs that have been bound to a processor with
+.Xr processor_bind 2
+may also be bound to a processor set if the processor is part of the processor
+set.
+If this occurs, the binding to the processor remains in effect.
+If the processor binding is later removed, the processor set binding becomes
+effective.
+.Pp
+Processor set bindings are inherited across
+.Xr fork 2
+and
+.Xr exec 2 .
+.Sh RETURN VALUES
+.Rv -std
+.Sh ERRORS
+The
+.Fn pset_bind
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EBUSY
+One of the LWPs is bound to a processor, and the specified processor set does
+not include that processor.
+.It Bq Er EFAULT
+The location pointed to by
+.Fa opset
+was not
+.Dv NULL
+and not writable by the user.
+.It Bq Er EINVAL
+An invalid processor set ID was specified; or
+.Fa idtype
+was not
+.Dv P_PID , P_LWPID , P_PROJID , P_TASKID , P_ZONEID
+or
+.Dv P_CTID .
+.It Bq Er ENOTSUP
+The pools facility is active.
+See
+.Xr pooladm 1M
+and
+.Xr pool_set_status 3POOL
+for information about enabling and disabling the pools facility.
+Processes can be bound to pools using the
+.Xr poolbind 1M
+utility or the
+.Xr pool_set_binding 3POOL
+function.
+.Pp
 Binding a system process to a processor set is not supported.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 11n
-The {\fBPRIV_PROC_OWNER\fR} is not asserted in the effective set of the calling
-process and either the real or effective user ID of the calling process does
-not match the real or effective user \fBID\fR of one of the LWPs being bound,
-or the processor set from which one or more of the LWPs are being unbound has
-the \fBPSET_NOESCAPE\fR attribute set and {\fBPRIV_SYS_RES_CONFIG\fR) is not
-asserted in the effective set of the calling process. See \fBpset_setattr\fR(2)
+.It Bq Er EPERM
+The
+.Brq Dv PRIV_PROC_OWNER
+is not asserted in the effective set of the calling process and either the real
+or effective user ID of the calling process does not match the real or
+effective user ID of one of the LWPs being bound, or the processor set from
+which one or more of the LWPs are being unbound has the
+.Dv PSET_NOESCAPE
+attribute set and
+.Brq Dv PRIV_SYS_RES_CONFIG
+is not asserted in the effective set of the calling process.
+See
+.Xr pset_setattr 2
 for more information about processor set attributes.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBESRCH\fR\fR
-.ad
-.RS 11n
-No processes, \fBLWP\fRs, or tasks were found to match the criteria specified
-by \fIidtype\fR and \fIid\fR.
-.RE
-
-.SH ATTRIBUTES
-.LP
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-Interface Stability	Committed
-_
-MT-Level	Async-Signal-Safe
-.TE
-
-.SH SEE ALSO
-.LP
-\fBpbind\fR(1M), \fBpooladm\fR(1M), \fBpoolbind\fR(1M), \fBpsrset\fR(1M),
-\fBexec\fR(2), \fBfork\fR(2), \fBprocessor_bind\fR(2), \fBpset_create\fR(2),
-\fBpset_info\fR(2), \fBpset_setattr\fR(2), \fBpool_set_binding\fR(3POOL),
-\fBpool_set_status\fR(3POOL), \fBpset_getloadavg\fR(3C), \fBprocess\fR(4),
-\fBproject\fR(4), \fBattributes\fR(5), \fBprivileges\fR(5)
+.It Bq Er ESRCH
+No processes, LWPs, or tasks were found to match the criteria specified by
+.Fa idtype
+and
+.Fa id .
+.El
+.Sh INTERFACE STABILITY
+.Sy Committed
+.Sh MT-LEVEL
+.Sy Async-Signal-Safe
+.Sh SEE ALSO
+.Xr pbind 1M ,
+.Xr pooladm 1M ,
+.Xr poolbind 1M ,
+.Xr psrset 1M ,
+.Xr exec 2 ,
+.Xr fork 2 ,
+.Xr processor_bind 2 ,
+.Xr pset_create 2 ,
+.Xr pset_info 2 ,
+.Xr pset_setattr 2 ,
+.Xr pset_getloadavg 3C ,
+.Xr pool_set_binding 3POOL ,
+.Xr pool_set_status 3POOL ,
+.Xr process 4 ,
+.Xr project 4 ,
+.Xr attributes 5 ,
+.Xr privileges 5

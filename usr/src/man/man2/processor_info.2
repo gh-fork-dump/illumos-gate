@@ -1,90 +1,96 @@
-'\" te
-.\" Copyright (c) 2004, Sun Microsystems, Inc.  All Rights Reserved.
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH PROCESSOR_INFO 2 "Jun 28, 2004"
-.SH NAME
-processor_info \- determine type and status of a processor
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/types.h>
-#include <sys/processor.h>
-
-\fBint\fR \fBprocessor_info\fR(\fBprocessorid_t\fR \fIprocessorid\fR, \fBprocessor_info_t *\fR\fIinfop\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBprocessor_info()\fR function returns the status of the processor
-specified by \fIprocessorid\fR in the \fBprocessor_info_t\fR structure pointed
-to by \fIinfop\fR.
-.sp
-.LP
-The structure \fBprocessor_info_t\fR contains the following members:
-.sp
-.in +2
-.nf
-int      pi_state;
-char     pi_processor_type[PI_TYPELEN];
-char     pi_fputypes[PI_FPUTYPE];
-int      pi_clock;
-.fi
-.in -2
-
-.sp
-.LP
-The \fBpi_state\fR member is the current state of the processor, either
-\fBP_ONLINE\fR, \fBP_OFFLINE\fR, \fBP_NOINTR\fR, \fBP_FAULTED\fR,
-\fBP_SPARE\fR, or \fBP_POWEROFF\fR.
-.sp
-.LP
-The \fBpi_processor_type\fR member is a null-terminated ASCII string specifying
-the type of the processor.
-.sp
-.LP
-The \fBpi_fputypes\fR member is a null-terminated ASCII string containing the
-comma-separated types of floating-point units (FPUs) attached to the processor.
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright (c) 2004, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd June 28, 2004
+.Dt PROCESSOR_INFO 2
+.Os
+.Sh NAME
+.Nm processor_info
+.Nd determine type and status of a processor
+.Sh SYNOPSIS
+.In sys/types.h
+.In sys/processor.h
+.Ft int
+.Fn processor_info "processorid_t processorid" "processor_info_t *infop"
+.Sh DESCRIPTION
+The
+.Fn processor_info
+function returns the status of the processor
+specified by
+.Fa processorid
+in the
+.Vt processor_info_t
+structure pointed
+to by
+.Fa infop .
+The structure contains the following members:
+.Bd -literal -offset indent
+int	pi_state;
+char	pi_processor_type[PI_TYPELEN];
+char	pi_fputypes[PI_FPUTYPE];
+int	pi_clock;
+.Ed
+.Pp
+The
+.Va pi_state
+member is the current state of the processor, either
+.Dv P_ONLINE , P_OFFLINE , P_NOINTR , P_FAULTED , P_SPARE
+or
+.Dv P_POWEROFF .
+.Pp
+The
+.Va pi_processor_type
+member is a null-terminated ASCII string specifying the type of the processor.
+.Pp
+The
+.Va pi_fputypes
+member is a null-terminated ASCII string containing the comma-separated types
+of floating-point units (FPUs) attached to the processor.
 This string will be empty if no FPU is attached.
-.sp
-.LP
-The \fBpi_clock\fR member is the processor clock frequency rounded to the
-nearest megahertz. It may be  \fB0\fR if not known.
-.SH RETURN VALUES
-.sp
-.LP
-Upon successful completion, \fB0\fR is returned. Otherwise,  \fB\(mi1\fR is
-returned and  \fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.sp
-.LP
-The \fBprocessor_info()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-An non-existent processor \fBID\fR was specified.
-.sp
+.Pp
+The
+.Va pi_clock
+member is the processor clock frequency rounded to the nearest megahertz.
+It may be 0 if not known.
+.Sh RETURN VALUES
+.Rv -std
+.Sh ERRORS
+The
+.Fn processor_info
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EINVAL
+An non-existent processor ID was specified.
+.Pp
 The caller is in a non-global zone, the pools facility is active, and the
 processor is not a member of the zone's pool's processor set.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 10n
-The  \fBprocessor_info_t\fR structure pointed to by  \fIinfop\fR was not
-writable by the user.
-.RE
-
-.SH SEE ALSO
-.sp
-.LP
-\fBpooladm\fR(1M), \fBpsradm\fR(1M), \fBpsrinfo\fR(1M), \fBzoneadm\fR(1M),
-\fBp_online\fR(2), \fBsysconf\fR(3C)
+.It Bq Er EFAULT
+The
+.Vt processor_info_t
+structure pointed to by
+.Fa infop
+was not writable by the user.
+.El
+.Sh SEE ALSO
+.Xr pooladm 1M ,
+.Xr psradm 1M ,
+.Xr psrinfo 1M ,
+.Xr zoneadm 1M ,
+.Xr p_online 2 ,
+.Xr sysconf 3C

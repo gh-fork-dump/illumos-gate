@@ -1,95 +1,93 @@
-'\" te
-.\"  Copyright (c) 2001, Sun Microsystems, Inc.  All Rights Reserved
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH _LWP_INFO 2 "Aug 8, 2001"
-.SH NAME
-_lwp_info \- return the time-accounting information of a single LWP
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/time.h>
-#include <sys/lwp.h>
-
-\fBint\fR \fB_lwp_info\fR(\fBstruct lwpinfo *\fR\fIbuffer\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fB_lwp_info()\fR function fills the  \fBlwpinfo\fR structure pointed to by
-\fIbuffer\fR with time-accounting information pertaining to the calling LWP.
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright (c) 2001, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd August 8, 2001
+.Dt _LWP_INFO 2
+.Os
+.Sh NAME
+.Nm _lwp_info
+.Nd return the time-accounting information of a single LWP
+.Sh SYNOPSIS
+.In sys/time.h
+.In sys/lwp.h
+.Ft int
+.Fn _lwp_info "struct lwpinfo *buffer"
+.Sh DESCRIPTION
+The
+.Fn _lwp_info
+function fills the
+.Vt lwpinfo
+structure pointed to by
+.Fa buffer
+with time-accounting information pertaining to the calling LWP.
 This call may be extended in the future to return other information to the
-\fBlwpinfo\fR structure as needed.  The  \fBlwpinfo\fR structure in
-<\fBsys/lwp.h\fR> includes the following members:
-.sp
-.in +2
-.nf
-timestruc_t   lwp_utime;
-timestruc_t   lwp_stime;
-.fi
-.in -2
-
-.sp
-.LP
-The \fBlwp_utime\fR member is the CPU time used while executing instructions in
+.Vt lwpinfo
+structure as needed.
+The
+.Vt lwpinfo
+structure in
+.In sys/lwp.h
+includes the following members:
+.Bd -literal -offset indent
+timestruc_t	lwp_utime;
+timestruc_t	lwp_stime;
+.Ed
+.Pp
+The
+.Va lwp_utime
+member is the CPU time used while executing instructions in
 the user space of the calling LWP.
-.sp
-.LP
-The \fBlwp_stime\fR member is the CPU time used by the system on behalf of the
+The
+.Va lwp_stime
+member is the CPU time used by the system on behalf of the
 calling LWP.
-.SH RETURN VALUES
-.sp
-.LP
-Upon successful completion,  \fB_lwp_info()\fR returns  \fB0\fR and fills in
-the \fBlwpinfo\fR structure pointed to by  \fIbuffer\fR.
-.SH ERRORS
-.sp
-.LP
-If the following condition is detected,  \fB_lwp_info()\fR returns the
-corresponding value:
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 10n
-The \fIbuffer\fR argument points to an illegal address.
-.RE
-
-.sp
-.LP
-Additionally, the \fB_lwp_info()\fR function will fail for 32-bit interfaces
-if:
-.sp
-.ne 2
-.na
-\fB\fBEOVERFLOW\fR\fR
-.ad
-.RS 13n
-The size of the \fBtv_sec\fR member of the \fBtimestruc_t\fR type pointed to by
-\fBlwp_utime\fR and \fBlwp_stime\fR is too small to contain the correct number
-of seconds.
-.RE
-
-.SH ATTRIBUTES
-.sp
-.LP
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-MT-Level	Async-Signal-Safe
-.TE
-
-.SH SEE ALSO
-.sp
-.LP
-\fBtimes\fR(2), \fBattributes\fR(5)
+.Sh RETURN VALUES
+Upon successful completion, the value 0 is returned;
+otherwise an error value is returned.
+.Pp
+The
+.Fn _lwp_info
+function will fail with:
+.Bl -tag -width Er
+.It Bq Er EFAULT
+The
+.Fa buffer
+argument points to an illegal address.
+.El
+.Pp
+Additionally,
+.Fn lwp_info
+will fail for 32-bit interfaces with:
+.Bl -tag -width Er
+.It Bq Er EOVERFLOW
+The size of the
+.Va tv_sec
+member of the
+.Vt timestruc_t
+type pointed to by
+.Va lwp_utime
+and
+.Va lwp_stime
+is too small to contain the correct number of seconds.
+.El
+.Sh MT-LEVEL
+.Sy Async-Signal-Safe
+.Sh SEE ALSO
+.Xr times 2 ,
+.Xr attributes 5

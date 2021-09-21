@@ -1,157 +1,191 @@
-'\" te
-.\" Copyright (c) 2009, Sun Microsystems, Inc.  All Rights Reserved.
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License. You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.
-.\"  See the License for the specific language governing permissions and limitations under the License. When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with
-.\" the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH PROCESSOR_BIND 2 "Dec 27, 2015"
-.SH NAME
-processor_bind \- bind LWPs to a processor
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/types.h>
-#include <sys/processor.h>
-#include <sys/procset.h>
-
-\fBint\fR \fBprocessor_bind\fR(\fBidtype_t\fR \fIidtype\fR, \fBid_t\fR \fIid\fR, \fBprocessorid_t\fR \fIprocessorid\fR,
-     \fBprocessorid_t *\fR\fIobind\fR);
-.fi
-
-.SH DESCRIPTION
-.LP
-The \fBprocessor_bind()\fR function binds the LWP (lightweight process) or set
-of LWPs specified by \fIidtype\fR and \fIid\fR to the processor specified by
-\fIprocessorid\fR. If \fIobind\fR is not \fINULL\fR, this function also sets
-the \fBprocessorid_t\fR variable pointed to by \fIobind\fR to the previous
-binding of one of the specified LWPs, or to \fBPBIND_NONE\fR if the selected
-LWP was not bound.
-.sp
-.LP
-If \fIidtype\fR is \fBP_PID\fR, the binding affects all LWPs of the process
-with process ID (PID) \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_LWPID\fR, the binding affects the LWP of the current
-process with LWP ID \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_TASKID\fR, the binding affects all LWPs of all
-processes with task ID \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_PROJID\fR, the binding affects all LWPs of all
-processes with project ID \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_CTID\fR, the binding affects all LWPs of all processes
-with process contract ID \fIid\fR.
-.sp
-.LP
-If \fIidtype\fR is \fBP_ZONEID\fR, the binding affects all LWPs of all
-processes with zone ID \fIid\fR.
-.sp
-.LP
-If \fIid\fR is \fBP_MYID\fR, the specified LWP, process, task, or project is
-the current one.
-.sp
-.LP
-If \fIprocessorid\fR is \fBPBIND_NONE\fR, the processor bindings of the
-specified LWPs are cleared.
-.sp
-.LP
-If \fIprocessorid\fR is \fBPBIND_QUERY\fR, the processor bindings are not
-changed.
-.sp
-.LP
-The {\fBPRIV_PROC_OWNER\fR} privilege must be asserted in the effective set of
-the calling process or the real or effective user ID of the calling process
-must match the real or effective user ID of the \fBLWP\fRs being bound.  If the
-calling process does not have permission to change all of the specified LWPs,
-the bindings of the LWPs for which it does have permission will be changed even
-though an error is returned.
-.sp
-.LP
-Processor bindings are inherited across \fBfork\fR(2) and \fBexec\fR(2).
-.SH RETURN VALUES
-.LP
-Upon successful completion, \fB0\fR is returned.  Otherwise, \fB\(mi1\fR is
-returned and  \fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.LP
-The \fBprocessor_bind()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 11n
-The location pointed to by \fIobind\fR was not \fINULL\fR and not writable by
-the user.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 11n
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright (c) 2009, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd December 27, 2015
+.Dt PROCESSOR_BIND 2
+.Os
+.Sh NAME
+.Nm processor_bind
+.Nd bind LWPs to a processor
+.Sh SYNOPSIS
+.In sys/types.h
+.In sys/processor.h
+.In sys/procset.h
+.Ft int
+.Fo processor_bind
+.Fa "idtype_t idtype"
+.Fa "id_t id"
+.Fa "processorid_t processorid"
+.Fa "processorid_t *obind"
+.Fc
+.Sh DESCRIPTION
+The
+.Fn processor_bind
+function binds the LWP (lightweight process) or set
+of LWPs specified by
+.Fa idtype
+and
+.Fa id
+to the processor specified by
+.Fa processorid .
+If
+.Fa obind
+is not
+.Dv NULL ,
+this function also sets
+the
+.Vt processorid_t
+variable pointed to by
+.Fa obind
+to the previous binding of one of the specified LWPs, or to
+.Dv PBIND_NONE
+if the selected LWP was not bound.
+.Pp
+If
+.Fa idtype
+is
+.Dv P_PID ,
+the binding affects all LWPs of the process
+with process ID (PID)
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_LWPID ,
+the binding affects the LWP of the current
+process with LWP ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_TASKID ,
+the binding affects all LWPs of all processes with task ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_PROJID ,
+the binding affects all LWPs of all processes with project ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_CTID ,
+the binding affects all LWPs of all processes
+with process contract ID
+.Fa id .
+.Pp
+If
+.Fa idtype
+is
+.Dv P_ZONEID ,
+the binding affects all LWPs of all
+processes with zone ID
+.Fa id .
+If
+.Fa id
+is
+.Dv P_MYID ,
+the specified LWP, process, task, or project is the current one.
+.Pp
+If
+.Fa processorid
+is
+.Dv PBIND_NONE ,
+the processor bindings of the specified LWPs are cleared.
+.Pp
+If
+.Fa processorid
+is
+.Dv PBIND_QUERY ,
+the processor bindings are not changed.
+.Pp
+The
+.Brq Dv PRIV_PROC_OWNER
+privilege must be asserted in the effective set of the calling process or the
+real or effective user ID of the calling process must match the real or
+effective user ID of the  LWP s being bound.
+If the calling process does not have permission to change all of the specified
+LWPs, the bindings of the LWPs for which it does have permission will be
+changed even though an error is returned.
+.Pp
+Processor bindings are inherited across
+.Xr fork 2
+and
+.Xr exec 2 .
+.Sh RETURN VALUES
+.Rv -std
+.Sh ERRORS
+The
+.Fn processor_bind
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EFAULT
+The location pointed to by
+.Fa obind
+was not
+.Dv NULL
+and not writable by the user.
+.It Bq Er EINVAL
 The processor is not on-line.
-.sp
+.Pp
 The LWP is bound to a processor set or resource pool for which the
 processor is not a member.
-.sp
-The \fIidtype\fR argument is not \fBP_PID\fR, \fBP_LWPID\fR,
-\fBP_PROJID\fR, \fBP_TASKID\fR, \fBP_CTID\fR, or \fBP_ZONEID\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOTSUP\fR\fR
-.ad
-.RS 11n
+.Pp
+The  idtype  argument is not
+.Dv P_PID , P_LWPID , P_PROJID , P_TASKID , P_CTID
+or
+.Dv P_ZONEID .
+.It Bq Er ENOTSUP
 Binding a system process to a processor set is not supported.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 11n
-The {\fBPRIV_PROC_OWNER\fR} privilege is not asserted in the effective set of
-the calling process and its real or effective user ID does not match the real
-or effective user \fBID\fR of one of the \fBLWP\fRs being bound.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBESRCH\fR\fR
-.ad
-.RS 11n
-No processes, \fBLWP\fRs, or tasks were found to match the criteria specified
-by \fIidtype\fR and \fIid\fR.
-.RE
-
-.SH ATTRIBUTES
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-Interface Stability	Committed
-_
-MT-Level	Async-Signal-Safe
-.TE
-
-.SH SEE ALSO
-\fBpooladm\fR(1M), \fBpsradm\fR(1M), \fBpsrinfo\fR(1M), \fBzoneadm\fR(1M),
-\fBexec\fR(2), \fBfork\fR(2), \fBp_online\fR(2), \fBpset_bind\fR(2),
-\fBsysconf\fR(3C), \fBprocess\fR(4), \fBproject\fR(4), \fBattributes\fR(5),
-\fBprivileges\fR(5)
+.It Bq Er EPERM
+The
+.Brq Dv PRIV_PROC_OWNER
+privilege is not asserted in the effective set of the calling process and its
+real or effective user ID does not match the real or effective user ID of one
+of the LWPs being bound.
+.It Bq Er ESRCH
+No processes, LWPs, or tasks were found to match the criteria specified
+by
+.Fa idtype
+and
+.Fa id .
+.El
+.Sh INTERFACE STABILITY
+.Sy Committed
+.Sh MT-LEVEL
+.Sy Async-Signal-Safe
+.Sh SEE ALSO
+.Xr pooladm 1M ,
+.Xr psradm 1M ,
+.Xr psrinfo 1M ,
+.Xr zoneadm 1M ,
+.Xr exec 2 ,
+.Xr fork 2 ,
+.Xr p_online 2 ,
+.Xr pset_bind 2 ,
+.Xr sysconf 3C ,
+.Xr process 4 ,
+.Xr project 4 ,
+.Xr attributes 5 ,
+.Xr privileges 5

@@ -1,167 +1,204 @@
-'\" te
-.\" Copyright (c) 2003, Sun Microsystems, Inc.  All Rights Reserved
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH GETACCT 2 "Jan 20, 2003"
-.SH NAME
-getacct, putacct, wracct \- get, put, or write extended accounting data
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/exacct.h>
-
-\fBsize_t\fR \fBgetacct\fR(\fBidtype_t\fR \fIidtype\fR, \fBid_t\fR \fIid\fR, \fBvoid *\fR\fIbuf\fR, \fBsize_t\fR \fIbufsize\fR);
-.fi
-
-.LP
-.nf
-\fBint\fR \fBputacct\fR(\fBidtype_t\fR \fIidtype\fR, \fBid_t\fR \fIid\fR, \fBvoid *\fR\fIbuf\fR, \fBsize_t\fR \fIbufsize\fR, \fBint\fR \fIflags\fR);
-.fi
-
-.LP
-.nf
-\fBint\fR \fBwracct\fR(\fBidtype_t\fR \fIidtype\fR, \fBid_t\fR \fIid\fR, \fBint\fR \fIflags\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright (c) 2003, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd January 20, 2003
+.Dt GETACCT 2
+.Os
+.Sh NAME
+.Nm getacct , putacct , wracct
+.Nd get, put, or write extended accounting data
+.Sh SYNOPSIS
+.In sys/exacct.h
+.Ft size_t
+.Fo getacct
+.Fa "idtype_t idtype"
+.Fa "id_t id"
+.Fa "void *buf"
+.Fa "size_t bufsize"
+.Fc
+.Ft int
+.Fo putacct
+.Fa "idtype_t idtype"
+.Fa "id_t id"
+.Fa "void *buf"
+.Fa "size_t bufsize"
+.Fa "int flags"
+.Fc
+.Ft int
+.Fo wracct
+.Fa "idtype_t idtype"
+.Fa "id_t id"
+.Fa "int flags"
+.Fc
+.Sh DESCRIPTION
 These functions provide access to the extended accounting facility.
-.sp
-.LP
-The \fBgetacct()\fR function returns extended accounting buffers from the
-kernel for currently executing tasks and processes. The resulting data buffer
-is a packed \fBexacct\fR object that can be unpacked using
-\fBea_unpack_object()\fR (see \fBea_pack_object\fR(3EXACCT)) and subsequently
-manipulated using the functions of the extended accounting library,
-\fBlibexacct\fR(3LIB).
-.sp
-.LP
-The \fBputacct()\fR function provides privileged processes the ability to tag
-accounting records with additional data specific to that process.  For
-instance, a queueing facility might want to record to which queue a given task
-or process was submitted prior to running. The \fIflags\fR argument determines
-whether the contents of \fIbuf\fR should be treated as raw data (\fBEP_RAW\fR)
-or as an embedded \fBexacct\fR structure (\fBEP_EXACCT_OBJECT\fR). In the case
-of \fBEP_EXACCT_OBJECT\fR, \fIbuf\fR must be a packed \fBexacct\fR object as
-returned by \fBea_pack_object\fR(3EXACCT). The use of an inappropriate flag or
-the inclusion of corrupt \fBexacct\fR data will likely corrupt the enclosing
-\fBexacct\fR file.
-.sp
-.LP
-The \fBwracct()\fR function requests the kernel to write, given its internal
-state of resource usage, the appropriate data for the specified task or
-process. The flags field determines whether a partial (\fBEW_PARTIAL\fR) or
-interval record (\fBEW_INTERVAL\fR) is written.
-.sp
-.LP
+.Pp
+The
+.Fn getacct
+function returns extended accounting buffers from the
+kernel for currently executing tasks and processes.
+The resulting data buffer
+is a packed
+.Vt exacct
+object that can be unpacked using
+.Fn ea_unpack_object Pq see Xr ea_pack_object 3EXACCT
+and subsequently manipulated using the functions of the extended accounting
+library,
+.Xr libexacct 3LIB .
+.Pp
+The
+.Fn putacct
+function provides privileged processes the ability to tag accounting records
+with additional data specific to that process.
+For instance, a queueing facility might want to record to which queue a given
+task or process was submitted prior to running.
+The
+.Fa flags
+argument determines whether the contents of buf should be treated as raw data
+.Pq Dv EP_RAW
+or as an embedded
+.Vt exacct
+structure
+.Pq Dv EP_EXACCT_OBJECT .
+In the case of
+.Dv EP_EXACCT_OBJECT , Fa buf
+must be a packed
+.Vt exacct
+object as returned by
+.Xr ea_pack_object 3EXACCT .
+The use of an inappropriate flag or the inclusion of corrupt
+.Vt exacct
+data will likely corrupt the enclosing
+.Vt exacct
+file.
+.Pp
+The
+.Fn wracct
+function requests the kernel to write, given its internal state of resource
+usage, the appropriate data for the specified task or process.
+The flags field determines whether a partial
+.Pq Dv EW_PARTIAL
+or interval record
+.Pq Dv EW_INTERVAL
+is written.
+.Pp
 These functions require root privilege, as they allow inquiry or reporting
-relevant to system tasks and processes other than the invoking process. The
-\fBputacct()\fR and \fBwracct()\fR functions also cause the kernel to write
-records to the system's extended accounting files.
-.SH RETURN VALUES
-.sp
-.LP
-The \fBgetacct()\fR function returns the number of bytes required to represent
-the extended accounting record for the requested system task or process.  If
-\fIbufsize\fR exceeds the returned size, \fIbuf\fR will contain a valid
-accounting record buffer. If \fIbufsize\fR is less than the return value,
-\fIbuf\fR will contain the first \fIbufsize\fR bytes of the record. If
-\fIbufsize\fR is 0, \fBgetacct()\fR returns only the number of  bytes required
-to represent the extended accounting record. In the event of failure,
-\fB\(mi1\fR is returned and \fBerrno\fR is set to indicate the error.
-.sp
-.LP
-The \fBputacct()\fR and \fBwracct()\fR functions return \fB0\fR if the record
-was successfully written. Otherwise, \fB\(mi1\fR is returned and \fBerrno\fR is
-set to indicate the error.
-.SH ERRORS
-.sp
-.LP
-The \fBgetacct()\fR, \fBputacct()\fR, and \fBwracct()\fR functions will fail
-if:
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 14n
-The \fIidtype\fR argument was not \fBP_TASKID\fR or \fBP_PID\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOSPC\fR\fR
-.ad
-.RS 14n
-The file system containing the extended accounting file is full.  The
-\fBwracct()\fR or \fBputacct()\fR function will fail if the record size would
-exceed the amount of space remaining on the file system.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOTACTIVE\fR\fR
-.ad
-.RS 14n
-The extended accounting facility for the requested \fBidtype_t\fR is not
-active.  Either \fBputacct()\fR attempted to write a task record when the task
-accounting file was unset, or \fBgetacct()\fR attempted to retrieve accounting
-data for a process when extended process accounting was inactive.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 14n
-The {\fBPRIV_SYS_ACCT\fR} privilege is not asserted in the effective set of the
-calling process.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBERSCH\fR\fR
-.ad
-.RS 14n
-The \fIid\fR argument does not refer to a presently active system task \fBID\fR
-or process \fBID\fR.
-.RE
-
-.sp
-.LP
-The \fBputacct()\fR and \fBwracct()\fR functions will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-The \fIflags\fR argument is neither \fBEW_PARTIAL\fR nor \fBEW_INTERVAL\fR.
-.RE
-
-.SH ATTRIBUTES
-.sp
-.LP
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-MT-Level	Async-Signal-Safe
-.TE
-
-.SH SEE ALSO
-.sp
-.LP
-\fBea_pack_object\fR(3EXACCT), \fBlibexacct\fR(3LIB), \fBattributes\fR(5)
+relevant to system tasks and processes other than the invoking process.
+The
+.Fn putacct
+and
+.Fn wracct
+functions also cause the kernel to write records to the system's extended
+accounting files.
+.Sh RETURN VALUES
+The
+.Fn getacct
+function returns the number of bytes required to represent
+the extended accounting record for the requested system task or process.
+If
+.Fa bufsize
+exceeds the returned size,
+.Fa buf
+will contain a valid
+accounting record buffer.
+If
+.Fa bufsize
+is less than the return value,
+.Fa buf
+will contain the first
+.Fa bufsize
+bytes of the record.
+If
+.Fa bufsize
+is 0,
+.Fn getacct
+returns only the number of bytes required to represent the extended accounting
+record.
+In the event of failure, the value -1 is returned and the global variable
+.Va errno
+is set to indicate the error.
+.Pp
+The
+.Fn putacct
+and
+.Fn wracct
+functions return the value 0 if the record was successfully written; otherwise
+the value -1 is returned and the global variable
+.Va errno
+is set to indicate the error.
+.Sh ERRORS
+The
+.Fn getacct , Fn putacct
+and
+.Fn wracct
+functions will fail if:
+.Bl -tag -width Er
+.It Bq Er EINVAL
+The idtype argument was not
+.Dv P_TASKID
+or
+.Dv P_PID .
+.It Bq Er ENOSPC
+The file system containing the extended accounting file is full.
+The
+.Fn wracct
+or
+.Fn putacct
+function will fail if the record size would exceed the amount of space
+remaining on the file system.
+.It Bq Er ENOTACTIVE
+The extended accounting facility for the requested
+.Vt idtype_t
+is not active.
+.It Bq Er Either
+.Fn putacct
+attempted to write a task record when the task accounting file was unset, or
+.Fn getacct
+attempted to retrieve accounting data for a process when extended process
+accounting was inactive.
+.It Bq Er EPERM
+The
+.Brq Dv PRIV_SYS_ACCT
+privilege is not asserted in the effective set of the calling process.
+.It Bq Er ERSCH
+The
+.Fa id
+argument does not refer to a presently active system task ID or process ID.
+.El
+.Pp
+The
+.Fn putacct
+and
+.Fn wracct
+functions will fail if:
+.Bl -tag -width Er
+.It Bq Er EINVAL
+The
+.Fa flags
+argument is neither
+.Dv EW_PARTIAL
+nor
+.Dv EW_INTERVAL .
+.El
+.Sh MT-LEVEL
+.Sy Async-Signal-Safe
+.Sh SEE ALSO
+.Xr ea_pack_object 3EXACCT ,
+.Xr libexacct 3LIB ,
+.Xr attributes 5

@@ -1,130 +1,124 @@
-'\" te
-.\"  Copyright 1989 AT&T  Copyright (c) 2001, Sun Microsystems, Inc.  All Rights Reserved
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH GETDENTS 2 "Jul 17, 2001"
-.SH NAME
-getdents \- read directory entries and put in a file system independent format
-.SH SYNOPSIS
-.LP
-.nf
-#include <dirent.h>
-
-\fBint\fR \fBgetdents\fR(\fBint\fR \fIfildes\fR, \fBstruct dirent *\fR\fIbuf\fR, \fBsize_t\fR \fInbyte\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBgetdents()\fR function attempts to read \fInbyte\fR bytes from the
-directory associated with the file descriptor \fIfildes\fR and to format them
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright 1989 AT&T
+.\" Copyright (c) 2001, Sun Microsystems, Inc. All Rights Reserved
+.\"
+.Dd July 17, 2001
+.Dt GETDENTS 2
+.Os
+.Sh NAME
+.Nm getdents
+.Nd read directory entries and put in a file system independent format
+.Sh SYNOPSIS
+.In dirent.h
+.Ft int
+.Fn getdents "int fildes" "struct dirent *buf" "size_t nbyte"
+.Sh DESCRIPTION
+The
+.Fn getdents
+function attempts to read
+.Fa nbyte
+bytes from the
+directory associated with the file descriptor
+.Fa fildes
+and to format them
 as file system independent directory entries in the buffer pointed to by
-\fIbuf\fR. Since the file system independent directory entries are of variable
+.Fa buf .
+Since the file system independent directory entries are of variable
 lengths, in most cases the actual number of bytes returned will be less than
-\fInbyte\fR. The file system independent directory entry is specified by the
-\fBdirent\fR structure.  See \fBdirent.h\fR(3HEAD).
-.sp
-.LP
-On devices capable of seeking, \fBgetdents()\fR starts at a position in the
-file given by the file pointer associated with \fIfildes\fR. Upon return from
-\fBgetdents()\fR, the file pointer is incremented to point to the next
-directory entry.
-.SH RETURN VALUES
-.sp
-.LP
+.Fa nbyte .
+The file system independent directory entry is specified by the
+.Vt dirent
+structure.
+See
+.Xr dirent.h 3HEAD .
+.Pp
+On devices capable of seeking,
+.Fn getdents
+starts at a position in the
+file given by the file pointer associated with
+.Fa fildes .
+Upon return from
+.Fn getdents ,
+the file pointer is incremented to point to the next directory entry.
+.Sh RETURN VALUES
 Upon successful completion, a non-negative integer is returned indicating the
-number of bytes actually read. A return value of \fB0\fR indicates the end of
-the directory has been reached. Otherwise, \fB\(mi1\fR is returned and
-\fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.sp
-.LP
-The \fBgetdents()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEBADF\fR\fR
-.ad
-.RS 13n
-The \fIfildes\fR argument is not a valid file descriptor open for reading.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 13n
-The \fIbuf\fR argument points to an illegal address.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 13n
-The \fInbyte\fR argument is not large enough for one directory entry.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEIO\fR\fR
-.ad
-.RS 13n
+number of bytes actually read.
+A return value of 0 indicates the end of the directory has been reached.
+Otherwise -1 is returned and the global variable
+.Va errno
+is set to indicate the error.
+.Sh ERRORS
+The
+.Fn getdents
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EBADF
+The
+.Fa fildes
+argument is not a valid file descriptor open for reading.
+.It Bq Er EFAULT
+The
+.Fa buf
+argument points to an illegal address.
+.It Bq Er EINVAL
+The
+.Fa nbyte
+argument is not large enough for one directory entry.
+.It Bq Er EIO
 An I/O error occurred while accessing the file system.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOENT\fR\fR
-.ad
-.RS 13n
+.It Bq Er ENOENT
 The current file pointer for the directory is not located at a valid entry.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOLINK\fR\fR
-.ad
-.RS 13n
-The \fIfildes\fR argument points to a remote machine and the link to that
-machine is no longer active.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOTDIR\fR\fR
-.ad
-.RS 13n
-The \fIfildes\fR argument is not a directory.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEOVERFLOW\fR\fR
-.ad
-.RS 13n
-The value of the \fBdirent\fR structure member \fBd_ino\fR or \fBd_off\fR
-cannot be represented in an \fBino_t\fR or  \fBoff_t\fR.
-.RE
-
-.SH USAGE
-.sp
-.LP
-The \fBgetdents()\fR function was developed to implement the \fBreaddir\fR(3C)
+.It Bq Er ENOLINK
+The
+.Fa fildes
+argument points to a remote machine and the link to that machine is no longer
+active.
+.It Bq Er ENOTDIR
+The
+.Fa fildes
+argument is not a directory.
+.It Bq Er EOVERFLOW
+The value of the
+.Vt dirent
+structure member
+.Va d_ino
+or
+.Va d_off
+cannot be represented in an
+.Vt ino_t
+or
+.Vt off_t .
+.El
+.Sh USAGE
+The
+.Fn getdents
+function was developed to implement the
+.Xr readdir 3C
 function and should not be used for other purposes.
-.sp
-.LP
-The \fBgetdents()\fR function has a transitional interface for 64-bit file
-offsets.  See \fBlf64\fR(5).
-.SH SEE ALSO
-.sp
-.LP
-\fBreaddir\fR(3C), \fBdirent.h\fR(3HEAD), \fBlf64\fR(5)
+.Pp
+The
+.Fn getdents
+function has a transitional interface for 64-bit file
+offsets.
+See
+.Xr lf64 5 .
+.Sh SEE ALSO
+.Xr readdir 3C ,
+.Xr dirent.h 3HEAD ,
+.Xr lf64 5

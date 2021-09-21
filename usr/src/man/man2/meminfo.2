@@ -1,199 +1,139 @@
-'\" te
-.\" Copyright (c) 2003, Sun Microsystems, Inc. All Rights Reserved.
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright (c) 2003, Sun Microsystems, Inc. All Rights Reserved
 .\" Copyright 2015, Joyent, Inc.
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH MEMINFO 2 "Mar 10, 2015"
-.SH NAME
-meminfo \- provide information about memory
-.SH SYNOPSIS
-.LP
-.nf
-#include <sys/types.h>
-#include <sys/mman.h>
-
-\fBint\fR \fBmeminfo\fR(\fBconst uint64_t\fR \fIinaddr\fR[], \fBint\fR \fIaddr_count\fR,
-     \fBconst uint_t\fR \fIinfo_req\fR[], \fBint\fR \fIinfo_count\fR, \fBuint64_t\fR \fIoutdata\fR[],
-     \fBuint_t\fR \fIvalidity\fR[]);
-.fi
-
-.SH PARAMETERS
-.ne 2
-.na
-\fB\fIinaddr\fR\fR
-.ad
-.RS 14n
-array of input addresses; the maximum number of addresses that can be processed
-for each call is \fBMAX_MEMINFO_CNT\fR
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fIaddr_count\fR\fR
-.ad
-.RS 14n
-number of addresses
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fIinfo_req\fR\fR
-.ad
-.RS 14n
-array of types of information requested
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fIinfo_count\fR\fR
-.ad
-.RS 14n
-number of pieces of information requested for each address in \fIinaddr\fR
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fIoutdata\fR\fR
-.ad
-.RS 14n
-array into which results are placed; array size must be the product of
-\fIinfo_count\fR and \fIaddr_count\fR
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fIvalidity\fR\fR
-.ad
-.RS 14n
-array of size \fIaddr_count\fR containing bitwise result codes; 0th bit
-evaluates validity of corresponding input address, 1st bit validity of response
-to first member of \fIinfo_req\fR, and so on
-.RE
-
-.SH DESCRIPTION
-.LP
-The \fBmeminfo()\fR function provides information about virtual and physical
-memory particular to the calling process.  The user or developer of performance
-utilities can use this information to analyze system memory allocations and
-develop a better understanding of the factors affecting application
-performance.
-.sp
-.LP
-The caller of \fBmeminfo()\fR can obtain the following types of information
-about both virtual and physical memory.
-.sp
-.ne 2
-.na
-\fB\fBMEMINFO_VPHYSICAL\fR\fR
-.ad
-.RS 26n
-physical address corresponding to virtual address
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBMEMINFO_VLGRP\fR\fR
-.ad
-.RS 26n
-locality group of physical page corresponding to virtual address
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBMEMINFO_VPAGESIZE\fR\fR
-.ad
-.RS 26n
-size of physical page corresponding to virtual address
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBMEMINFO_VREPLCNT\fR\fR
-.ad
-.RS 26n
-number of replicated physical pages corresponding to specified virtual address
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBMEMINFO_VREPL\fR | \fIn\fR\fR
-.ad
-.RS 26n
-\fIn\fRth physical replica of specified virtual address
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBMEMINFO_VREPL_LGRP\fR | \fIn\fR\fR
-.ad
-.RS 26n
-lgrp of \fIn\fRth physical replica of specified virtual address
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBMEMINFO_PLGRP\fR\fR
-.ad
-.RS 26n
-locality group of specified physical address
-.RE
-
-.sp
-.LP
-All but \fBMEMINFO_VLGRP\fR and \fBMEMINFO_VPAGESIZE\fR require the
-\fBPRIV_PROC_MEMINFO\fR privilege.
-
-.SH RETURN VALUES
-.LP
-Upon successful completion \fBmeminfo()\fR returns 0. Otherwise \(mi1 is
-returned and \fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.LP
-The \fBmeminfo()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 10n
-The area pointed to by \fIoutdata\fR or \fIvalidity\fR could not be written, or
-the data pointed to by \fIinfo_req\fR or \fIinaddr\fR could not be read.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-The value of \fIinfo_count\fR is greater than 31 or less than 1, or the value
-of \fIaddr_count\fR is less than 1.
-.RE
-
-.SH EXAMPLES
-.LP
-\fBExample 1 \fRPrint physical pages and page sizes corresponding to a set of
-virtual addresses.
-.sp
-.LP
+.\"
+.Dd March 10, 2015
+.Dt MEMINFO 2
+.Os
+.Sh NAME
+.Nm meminfo
+.Nd provide information about memory
+.Sh SYNOPSIS
+.In sys/types.h
+.In sys/mman.h
+.Ft int
+.Fo meminfo
+.Fa "const uint64_t inaddr[]"
+.Fa "int addr_count"
+.Fa "const uint_t info_req[]"
+.Fa "int info_count"
+.Fa "uint64_t outdata[]"
+.Fa "uint_t validity[]"
+.Fc
+.Sh PARAMETERS
+.Bl -tag -width "addr_count"
+.It Fa inaddr
+An array of input addresses;
+the maximum number of addresses that can be processed for each call is
+.Dv MAX_MEMINFO_CNT .
+.It Fa addr_count
+The number of addresses.
+.It Fa info_req
+An array of types of information requested.
+.It Fa info_count
+The number of pieces of information requested for each address in
+.Fa inaddr .
+.It Fa outdata
+An array into which results are placed;
+array size must be the product of
+.Fa info_count
+and
+.Fa addr_count .
+.It Fa validity
+An array of size
+.Fa addr_count
+containing bitwise result codes.
+The 0th bit evaluates validity of corresponding input address, the 1st bit
+evaluates validity of response to first member of
+.Fa info_req ,
+and so on.
+.El
+.Sh DESCRIPTION
+The
+.Fn meminfo
+function provides information about virtual and physical memory particular to
+the calling process.
+The user or developer of performance utilities can use this information to
+analyze system memory allocations and develop a better understanding of the
+factors affecting application performance.
+.Pp
+The caller of
+.Fn meminfo
+can obtain the following types of information about both virtual and physical
+memory.
+.Bl -tag -width Ds
+.It Dv MEMINFO_VPHYSICAL
+The physical address corresponding to the virtual address.
+.It Dv MEMINFO_VLGRP
+The locality group of physical page corresponding to the virtual address.
+.It Dv MEMINFO_VPAGESIZE
+The size of physical page corresponding to the virtual address.
+.It Dv MEMINFO_VREPLCNT
+The number of replicated physical pages corresponding to the specified virtual
+address.
+.It Dv MEMINFO_VREPL | Fa n
+The
+.Fa n Ns th
+physical replica of the specified virtual address.
+.It Dv MEMINFO_VREPL_LGRP | Fa n
+The lgrp of
+.Fa n Ns th
+physical replica of the specified virtual address.
+.It Dv MEMINFO_PLGRP
+The locality group of the specified physical address
+.El
+.Pp
+All but
+.Dv MEMINFO_VLGRP
+and
+.Dv MEMINFO_VPAGESIZE
+require the
+.Brq Dv PRIV_PROC_MEMINFO
+privilege.
+.Sh RETURN VALUES
+.Rv -std
+.Sh ERRORS
+The
+.Fn meminfo
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EFAULT
+The area pointed to by
+.Fa outdata
+or
+.Fa validity
+could not be written, or the data pointed to by
+.Fa info_req
+or
+.Fa inaddr
+could not be read.
+.It Bq Er EINVAL
+The value of
+.Fa info_count
+is greater than 31 or less than 1, or the value of
+.Fa addr_count
+is less than 1.
+.El
+.Sh EXAMPLES
 The following example prints the physical pages and page sizes corresponding to
 a set of virtual addresses.
-
-.sp
-.in +2
-.nf
+.Bd -literal
 void
 print_info(void **addrvec, int how_many)
 {
@@ -241,28 +181,17 @@ print_info(void **addrvec, int how_many)
         }
     }
 }
-.fi
-.in -2
-
-.SH ATTRIBUTES
-.LP
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-Interface Stability	Stable
-_
-MT-Level	Async-Signal-Safe
-.TE
-
-.SH SEE ALSO
-.LP
-\fBmemcntl\fR(2), \fBmmap\fR(2), \fBgethomelgroup\fR(3C),
-\fBgetpagesize\fR(3C), \fBmadvise\fR(3C), \fBsysconf\fR(3C),
-\fBattributes\fR(5), \fBprivileges\fR(5)
+.Ed
+.Sh INTERFACE STABILITY
+.Sy Stable
+.Sh MT-LEVEL
+.Sy Async-Signal-Safe
+.Sh SEE ALSO
+.Xr memcntl 2 ,
+.Xr mmap 2 ,
+.Xr gethomelgroup 3C ,
+.Xr getpagesize 3C ,
+.Xr madvise 3C ,
+.Xr sysconf 3C ,
+.Xr attributes 5 ,
+.Xr privileges 5

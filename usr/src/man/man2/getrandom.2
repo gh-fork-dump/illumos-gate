@@ -98,22 +98,22 @@ The
 .Fn getrandom
 function will fail if:
 .Bl -tag -width Er
-.It Er EAGAIN
+.It Bq Er EAGAIN
 The
 .Fn getrandom
 function would have blocked and
 .Dv GRND_NONBLOCK
 flag was set.
-.It Er EFAULT
+.It Bq Er EFAULT
 The
 .Fa bufp
 argument points to an illegal address.
-.It Er EINAVL
+.It Bq Er EINVAL
 An invalid value was passed in
 .Fa flags .
-.It Er EINTR
+.It Bq Er EINTR
 A signal was caught during the operation and no data was transferred.
-.It Er EIO
+.It Bq Er EIO
 An internal error occurred with the corresponding
 .Xr random 7D
 device.

@@ -1,38 +1,45 @@
-'\" te
 .\" Copyright (c) 1998, Sun Microsystems, Inc. All Rights Reserved.
-.\" Copyright (c) 1980 Regents of the University of California.  All rights reserved.  The Berkeley software License Agreement  specifies the terms and conditions for redistribution.
-.TH VHANGUP 2 "Mar 19, 1998"
-.SH NAME
-vhangup \- virtually "hangup" the current controlling terminal
-.SH SYNOPSIS
-.LP
-.nf
-#include <unistd.h>
-
-\fBvoid\fR \fBvhangup\fR(\fBvoid\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBvhangup()\fR function is used by the initialization process
-\fBinit\fR(1M) (among others) to ensure that users are given "clean" terminals
-at login by revoking access of the previous users' processes to the terminal.
-To effect this, \fBvhangup()\fR searches the system tables for references to
-the controlling terminal of the invoking process and revokes access permissions
-on each instance of the terminal that it finds. Further attempts to access the
-terminal by the affected processes will yield I/O errors (\fBEBADF\fR or
-\fBEIO\fR). A \fBSIGHUP\fR (hangup signal) is sent to the process group of the
-controlling terminal.
-.SH SEE ALSO
-.sp
-.LP
-\fBinit\fR(1M)
-.SH BUGS
-.sp
-.LP
-Access to the controlling terminal using \fB/dev/tty\fR is still possible.
-.sp
-.LP
+.\" Copyright (c) 1980 Regents of the University of California.
+.\" All rights reserved. The Berkeley software License Agreement
+.\" specifies the terms and conditions for redistribution.
+.Dd March 19, 1998
+.Dt VHANGUP 2
+.Os
+.Sh NAME
+.Nm vhangup
+.Nd virtually "hangup" the current controlling terminal
+.Sh SYNOPSIS
+.In unistd.h
+.Ft void
+.Fn vhangup void
+.Sh DESCRIPTION
+The
+.Fn vhangup
+function is used by the initialization process
+.Xr init 1M Pq among others
+to ensure that users are given "clean" terminals at login by revoking access of
+the previous users' processes to the terminal.
+To effect this,
+.Fn vhangup
+searches the system tables for references to the controlling terminal of the
+invoking process and revokes access permissions on each instance of the
+terminal that it finds.
+Further attempts to access the terminal by the affected processes will yield
+I/O errors
+.Po
+.Er EBADF
+or
+.Er EIO
+.Pc .
+A
+.Dv SIGHUP Pq hangup signal
+is sent to the process group of the controlling terminal.
+.Sh SEE ALSO
+.Xr init 1M
+.Sh BUGS
+Access to the controlling terminal using
+.Pa /dev/tty
+is still possible.
+.Pp
 This call should be replaced by an automatic mechanism that takes place on
 process exit.

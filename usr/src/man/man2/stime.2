@@ -1,54 +1,57 @@
-'\" te
-.\" Copyright 1989 AT&T.  Copyright (c) 2004, Sun Microsystems, Inc.  All Rights Reserved.
-.\" The contents of this file are subject to the terms of the Common Development and Distribution License (the "License").  You may not use this file except in compliance with the License.
-.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE or http://www.opensolaris.org/os/licensing.  See the License for the specific language governing permissions and limitations under the License.
-.\" When distributing Covered Code, include this CDDL HEADER in each file and include the License file at usr/src/OPENSOLARIS.LICENSE.  If applicable, add the following below this CDDL HEADER, with the fields enclosed by brackets "[]" replaced with your own identifying information: Portions Copyright [yyyy] [name of copyright owner]
-.TH STIME 2 "Mar 22, 2004"
-.SH NAME
-stime \- set system time and date
-.SH SYNOPSIS
-.LP
-.nf
-#include <unistd.h>
-
-\fBint\fR \fBstime\fR(\fBconst time_t *\fR\fItp\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBstime()\fR function sets the system's idea of the time and date.  The
-\fItp\fR argument points to the value of time as measured in seconds from
-00:00:00 UTC January 1, 1970.
-.SH RETURN VALUES
-.sp
-.LP
-Upon successful completion, \fB0\fR is returned. Otherwise, \fB\(mi1\fR is
-returned and \fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.sp
-.LP
-The \fBstime()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-The \fItp\fR argument points to an invalid (negative) value.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 10n
-The {\fBPRIV_SYS_TIME\fR} privilege is not asserted in the effective set of the
-calling process.
-.RE
-
-.SH SEE ALSO
-.sp
-.LP
-\fBtime\fR(2), \fBprivileges\fR(5)
+.\"
+.\" The contents of this file are subject to the terms of the
+.\" Common Development and Distribution License (the "License").
+.\" You may not use this file except in compliance with the License.
+.\"
+.\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
+.\" or http://www.opensolaris.org/os/licensing.
+.\" See the License for the specific language governing permissions
+.\" and limitations under the License.
+.\"
+.\" When distributing Covered Code, include this CDDL HEADER in each
+.\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.
+.\" If applicable, add the following below this CDDL HEADER, with the
+.\" fields enclosed by brackets "[]" replaced with your own identifying
+.\" information: Portions Copyright [yyyy] [name of copyright owner]
+.\"
+.\"
+.\" Copyright 1989 AT&T.
+.\" Copyright (c) 2004, Sun Microsystems, Inc. All Rights Reserved.
+.\"
+.Dd March 22, 2004
+.Dt STIME 2
+.Os
+.Sh NAME
+.Nm stime
+.Nd set system time and date
+.Sh SYNOPSIS
+.In unistd.h
+.Ft int
+.Fn stime "const time_t *tp"
+.Sh DESCRIPTION
+The
+.Fn stime
+function sets the system's idea of the time and date.
+The
+.Fa tp
+argument points to the value of time as measured in seconds from 00:00:00 UTC
+January 1, 1970.
+.Sh RETURN VALUES
+.Rv -std
+.Sh ERRORS
+The
+.Fn stime
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EINVAL
+The
+.Fa tp
+argument points to an invalid (negative) value.
+.It Bq Er EPERM
+The
+.Brq Dv PRIV_SYS_TIME
+privilege is not asserted in the effective set of the calling process.
+.El
+.Sh SEE ALSO
+.Xr time 2 ,
+.Xr privileges 5

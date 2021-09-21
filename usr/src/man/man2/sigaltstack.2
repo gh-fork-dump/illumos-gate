@@ -44,184 +44,159 @@
 .\" Portions Copyright (c) 1992, X/Open Company Limited.  All Rights Reserved.
 .\" Copyright (c) 2003, Sun Microsystems, Inc.  All Rights Reserved.
 .\"
-.TH SIGALTSTACK 2 "Nov 1, 2003"
-.SH NAME
-sigaltstack \- set or get signal alternate stack context
-.SH SYNOPSIS
-.LP
-.nf
-#include <signal.h>
-
-\fBint\fR \fBsigaltstack\fR(\fBconst stack_t *restrict\fR \fIss\fR, \fBstack_t *restrict\fR \fIoss\fR);
-.fi
-
-.SH DESCRIPTION
-.sp
-.LP
-The \fBsigaltstack()\fR function allows a thread to define and examine the
-state of an alternate stack area on which signals are processed. If \fIss\fR is
-non-zero, it specifies a pointer to and the size of a stack area on which to
+.Dd November 1, 2003
+.Dt SIGALTSTACK 2
+.Os
+.Sh NAME
+.Nm sigaltstack
+.Nd set or get signal alternate stack context
+.Sh SYNOPSIS
+.In signal.h
+.Ft int
+.Fn sigaltstack "const stack_t *restrict ss" "stack_t *restrict oss"
+.Sh DESCRIPTION
+The
+.Fn sigaltstack
+function allows a thread to define and examine the state of an alternate stack
+area on which signals are processed.
+If
+.Fa ss
+is non-zero, it specifies a pointer to and the size of a stack area on which to
 deliver signals, and informs the system whether the thread is currently
-executing on that stack.  When a signal's action indicates its handler should
-execute on the alternate signal stack (specified with a \fBsigaction\fR(2)
-call), the system checks whether the thread chosen to execute the signal
-handler is currently executing on that stack. If the thread is not currently
-executing on the signal stack, the system arranges a switch to the alternate
-signal stack for the duration of the signal handler's execution.
-.sp
-.LP
-The  \fBstack_t\fR structure includes the following members:
-.sp
-.in +2
-.nf
+executing on that stack.
+When a signal's action indicates its handler should execute on the alternate
+signal stack
+.Pq specified with a Xr sigaction 2 call ,
+the system checks whether the thread chosen to execute the signal handler is
+currently executing on that stack.
+If the thread is not currently executing on the signal stack, the system
+arranges a switch to the alternate signal stack for the duration of the signal
+handler's execution.
+.Pp
+The
+.Vt stack_t
+structure includes the following members:
+.Bd -literal -offset indent
 int   *ss_sp
 long  ss_size
 int   ss_flags
-.fi
-.in -2
-
-.sp
-.LP
-If \fIss\fR is not \fINULL\fR, it points to a structure specifying the
-alternate signal stack that will take effect upon successful return from
-\fBsigaltstack()\fR. The \fBss_sp\fR and \fBss_size\fR members specify the new
-base and size of the stack, which is automatically adjusted for direction of
-growth and alignment.  The \fBss_flags\fR member specifies the new stack state
-and may be set to the following:
-.sp
-.ne 2
-.na
-\fB\fBSS_DISABLE\fR\fR
-.ad
-.RS 14n
-The stack is to be disabled and \fBss_sp\fR and \fBss_size\fR are ignored. If
-\fBSS_DISABLE\fR is not set, the stack will be enabled.
-.RE
-
-.sp
-.LP
-If \fIoss\fR is not \fINULL\fR, it points to a structure specifying the
-alternate signal stack that was in effect prior to the call to
-\fBsigaltstack()\fR. The \fBss_sp\fR and \fBss_size\fR members specify the base
-and size of that stack.  The \fBss_flags\fR member specifies the stack's state,
-and may contain the following values:
-.sp
-.ne 2
-.na
-\fB\fBSS_ONSTACK\fR\fR
-.ad
-.RS 14n
-The thread is currently executing on the alternate signal stack. Attempts to
-modify the alternate signal stack while the thread is executing on it will
-fail.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBSS_DISABLE\fR\fR
-.ad
-.RS 14n
+.Ed
+.Pp
+If
+.Fa ss
+is not
+.Dv NULL ,
+it points to a structure specifying the alternate signal stack that will take
+effect upon successful return from
+.Fn sigaltstack .
+The
+.Va ss_sp
+and
+.Va ss_size
+members specify the new base and size of the stack, which is automatically
+adjusted for direction of growth and alignment.
+The
+.Va ss_flags
+member specifies the new stack state and may be set to the following:
+.Bl -tag -width "SS_ONSTACK"
+.It Dv SS_DISABLE
+The stack is to be disabled and
+.Va ss_sp
+and
+.Va ss_size
+are ignored.
+If
+.Dv SS_DISABLE
+is not set, the stack will be enabled.
+.El
+.Pp
+If
+.Va oss
+is not
+.Dv NULL ,
+it points to a structure specifying the alternate signal stack that was in
+effect prior to the call to
+.Fn sigaltstack .
+The
+.Va ss_sp
+and
+.Va ss_size
+members specify the base and size of that stack.
+The
+.Va ss_flags
+member specifies the stack's state, and may contain the following values:
+.Bl -tag -width "SS_ONSTACK"
+.It Dv SS_ONSTACK
+The thread is currently executing on the alternate signal stack.
+Attempts to modify the alternate signal stack while the thread is executing on
+it will fail.
+.It Dv SS_DISABLE
 The alternate signal stack is currently disabled.
-.RE
-
-.SH RETURN VALUES
-.sp
-.LP
-Upon successful completion, \fB0\fR is return. Otherwise, \fB\(mi1\fR is
-returned and \fBerrno\fR is set to indicate the error.
-.SH ERRORS
-.sp
-.LP
-The \fBsigaltstack()\fR function will fail if:
-.sp
-.ne 2
-.na
-\fB\fBEFAULT\fR\fR
-.ad
-.RS 10n
-The \fIss\fR or \fIoss\fR argument points to an illegal address.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEINVAL\fR\fR
-.ad
-.RS 10n
-The \fIss\fR argument is not a null pointer, and the \fBss_flags\fR member
-pointed to by \fIss\fR contains flags other than \fBSS_DISABLE\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBENOMEM\fR\fR
-.ad
-.RS 10n
-The size of the alternate stack area is less than \fBMINSIGSTKSZ\fR.
-.RE
-
-.sp
-.ne 2
-.na
-\fB\fBEPERM\fR\fR
-.ad
-.RS 10n
+.El
+.Sh RETURN VALUES
+.Rv -std
+.Sh ERRORS
+The
+.Fn sigaltstack
+function will fail if:
+.Bl -tag -width Er
+.It Bq Er EFAULT
+The
+.Fa ss
+or
+.Fa oss
+argument points to an illegal address.
+.It Bq Er EINVAL
+The
+.Fa ss
+argument is not a null pointer, and the
+.Va ss_flags
+member pointed to by
+.Fa ss
+contains flags other than
+.Dv SS_DISABLE .
+.It Bq Er ENOMEM
+The size of the alternate stack area is less than
+.Dv MINSIGSTKSZ .
+.It Bq Er EPERM
 An attempt was made to modify an active stack.
-.RE
-
-.SH ATTRIBUTES
-.sp
-.LP
-See \fBattributes\fR(5) for descriptions of the following attributes:
-.sp
-
-.sp
-.TS
-box;
-c | c
-l | l .
-ATTRIBUTE TYPE	ATTRIBUTE VALUE
-_
-Interface Stability	Standard
-_
-MT-Level	Async-Signal-Safe
-.TE
-
-.SH SEE ALSO
-.sp
-.LP
-\fBgetcontext\fR(2), \fBmmap\fR(2), \fBsigaction\fR(2),
-\fBucontext.h\fR(3HEAD), \fBattributes\fR(5), \fBstandards\fR(5)
-.SH NOTES
-.sp
-.LP
-The value \fBSIGSTKSZ\fR is defined to be the number of bytes that would be
-used to cover the usual case when allocating an alternate  stack area.  The
-value \fBMINSIGSTKSZ\fR is defined to be the minimum stack size for a signal
-handler.  In computing an alternate stack size, a program  should add that
-amount to its stack requirements to allow for the operating system overhead.
-.sp
-.LP
+.El
+.Sh INTERFACE STABILITY
+.Sy Standard
+.Sh MT-LEVEL
+.Sy Async-Signal-Safe
+.Sh SEE ALSO
+.Xr getcontext 2 ,
+.Xr mmap 2 ,
+.Xr sigaction 2 ,
+.Xr ucontext.h 3HEAD ,
+.Xr attributes 5 ,
+.Xr standards 5
+.Sh NOTES
+The value
+.Dv SIGSTKSZ
+is defined to be the number of bytes that would be used to cover the usual case
+when allocating an alternate stack area.
+The value
+.Dv MINSIGSTKSZ
+is defined to be the minimum stack size for a signal handler.
+In computing an alternate stack size, a program should add that amount to its
+stack requirements to allow for the operating system overhead.
+.Pp
 The following code fragment is typically used to allocate an alternate stack
 with an adjacent red zone (an unmapped page) to guard against stack overflow,
 as with default stacks:
-.sp
-.in +2
-.nf
+.Bd -literal -offset indent
 #include <signal.h>
 #include <sys/mman.h>
 
 stack_t sigstk;
 sigstk.ss_sp = mmap(NULL, SIGSTKSZ, PROT_READ | PROT_WRITE,
-        MAP_PRIVATE | MAP_ANON, -1, 0);
+	MAP_PRIVATE | MAP_ANON, -1, 0);
 if (sigstk.ss_sp == MAP_FAILED)
-        /* error return */;
+	/* error return */;
 sigstk.ss_size = SIGSTKSZ;
 sigstk.ss_flags = 0;
 if (sigaltstack(&sigstk, NULL) < 0)
-        perror("sigaltstack");
-.fi
-.in -2
-
+	perror("sigaltstack");
+.Ed
